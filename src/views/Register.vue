@@ -9,14 +9,14 @@
                   <v-text-field label="Confirmar Contraseña" type="password"></v-text-field>
                   <v-btn block color="primary" @click="$router.push('/principal')">Registrarse</v-btn>
               </v-form>
-          </v-flex>
+        </v-flex>
       </v-layout>
   </v-container>
 </template>
 <script>
-    export default {
-        created () {
-            this.$store.commit('SET_LAYOUT', 'login-layout')
-        }
-    }
+export default {
+  created () {
+    this.$store.commit('SET_LAYOUT', 'login-layout')
+  }
+}
 </script>
