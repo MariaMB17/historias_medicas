@@ -1,9 +1,7 @@
 import axios from 'axios'
-const baseURL = 'https://api.coindesk.com/v1/bpi/'
-
+import authHeader from './auth-header.js'
+const baseURL = 'http://api.historias/'
 export default axios.create({
   baseURL,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  headers: authHeader()
 })

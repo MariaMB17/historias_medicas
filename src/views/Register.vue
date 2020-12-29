@@ -14,7 +14,13 @@
   </v-container>
 </template>
 <script>
+import User from '../models/User-model.js'
 export default {
+  data () {
+    return {
+      user: new User('', '', '', '', false)
+    }
+  },
   created () {
     this.$store.commit('SET_LAYOUT', 'login-layout')
   }
