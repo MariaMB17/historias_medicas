@@ -36,8 +36,6 @@ export default {
   },
   methods: {
     loginUser: function (event) {
-      console.log(this.user)
-      alert(this.user.email + this.user.password)
       if (this.user.email && this.user.password) {
         this.$store.dispatch('auth/login', this.user).then(() => {
           this.$router.push('/principal')

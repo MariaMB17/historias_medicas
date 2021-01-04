@@ -20,6 +20,18 @@ export const auth = {
           return Promise.reject(error)
         }
       )
+    },
+    register ({ commit }, user) {
+      return AuthService.register(user).then(
+        response => {
+          commit('registerSuccess')
+          return Promise.resolve(response.data)
+        },
+        error => {
+          commit('registerFailure')
+          return Promise.reject(error.response)
+        }
+      )
     }
   },
   mutations: {
@@ -30,6 +42,12 @@ export const auth = {
     loginFailure (state) {
       state.status.loggedIn = false
       state.user = null
+    },
+    registerSuccess (state) {
+      state.status.loggedIn = false
+    },
+    registerFailure (state) {
+      state.status.loggedIn = false
     }
   }
 }

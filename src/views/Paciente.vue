@@ -15,16 +15,39 @@
   <v-form>
     <v-container class="grey lighten-5">
       <v-row>
+        <v-snackbar :timeout="3000"
+        :value="isInvalid"
+        absolute
+        right
+        shaped
+        top
+        >
+         {{ messages }}
+        </v-snackbar>
         <v-col
           cols="12"
-          sm="5"
-          md="5"
+          sm="2"
+          md="2"
         >
-          <v-text-field v-model="cedula" label="Cedula"
-          :error-messages="cedulaErrors"
+          <v-select v-model="paciente.tipoId"
+          :items="nacionalidades"
+          :error-messages="tipoIdErrors"
+          label="Nationality"
+          required
+          @change="$v.paciente.tipoId.$touch()"
+          @blur="$v.paciente.tipoId.$touch()">
+          </v-select>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="3"
+          md="3"
+        >
+          <v-text-field v-model="paciente.identificacion" label="Cedula"
+          :error-messages="identificacionErrors"
           :counter="10"
-          @input="$v.cedula.$touch()"
-          @blur="$v.cedula.$touch()"
+          @input="$v.paciente.identificacion.$touch()"
+          @blur="$v.paciente.identificacion.$touch()"
           ></v-text-field>
         </v-col>
         <v-col
@@ -34,22 +57,22 @@
           sm="5"
           md="5"
         >
-          <v-text-field v-model="firtsName" label="Firts name"
-          :error-messages="firtsNameErrors"
+          <v-text-field v-model="paciente.nombres" label="Firts name"
+          :error-messages="nombresErrors"
           :counter="255"
-          @input="$v.firtsName.$touch()"
-          @blur="$v.firtsName.$touch()"></v-text-field>
+          @input="$v.paciente.nombres.$touch()"
+          @blur="$v.paciente.nombres.$touch()"></v-text-field>
         </v-col>
         <v-col
           cols="12"
           sm="5"
           md="5"
         >
-          <v-text-field v-model="secondName" label="Second Name"
-          :error-messages="secondNameErrors"
+          <v-text-field v-model="paciente.apellidos" label="Second Name"
+          :error-messages="apellidosErrors"
           :counter="255"
-          @input="$v.secondName.$touch()"
-          @blur="$v.secondName.$touch()"
+          @input="$v.paciente.apellidos.$touch()"
+          @blur="$v.paciente.apellidos.$touch()"
           ></v-text-field>
         </v-col>
         <v-col
@@ -61,12 +84,12 @@
         >
         <v-menu ref='menu' v-model='menu'
           :close-on-content-click='false'
-          :return-value.sync='date'
+          :return-value.sync='paciente.fechaNac'
           transition="scale-transition"
           offset-y
           min-width='290px'>
           <template v-slot:activator="{ on, attrs }">
-            <v-text-field v-model="date"
+            <v-text-field v-model="paciente.fechaNac"
               label="Birthdate"
               prepend-icon="mdi-calendar"
               readonly
@@ -74,7 +97,7 @@
               v-on="on"
             ></v-text-field>
         </template>
-        <v-date-picker v-model="date" no-title scrollable
+        <v-date-picker v-model="paciente.fechaNac" no-title scrollable
             @click="functionEvents"
           >
           <v-spacer></v-spacer>
@@ -101,14 +124,28 @@
         </v-col>
         <v-col
           cols="12"
-          sm="5"
-          md="5"
+          sm="2"
+          md="2"
         >
-        <v-text-field v-model="email" :error-messages="emailErrors"
+         <v-select v-model="paciente.sexo"
+          :items="listSexo"
+          :error-messages="tipoIdErrors"
+          label="Sexo"
+          required
+          @change="$v.paciente.sexo.$touch()"
+          @blur="$v.paciente.sexo.$touch()">
+          </v-select>
+        </v-col>
+        <v-col
+          cols="12"
+          sm="3"
+          md="3"
+        >
+        <v-text-field v-model="paciente.email" :error-messages="emailErrors"
         label="E-mail"
         required
-        @input="$v.email.$touch()"
-        @blur="$v.email.$touch()"
+        @input="$v.paciente.email.$touch()"
+        @blur="$v.paciente.email.$touch()"
         ></v-text-field>
         </v-col>
         </v-row>
@@ -121,101 +158,107 @@ import moment from 'moment'
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, email } from 'vuelidate/lib/validators'
 import pacienteService from '../services/pacientes/paciente.js'
+import Paciente from '../models/Paciente-model.js'
 export default {
   mixins: [validationMixin],
 
   validations: {
-    cedula: { required, maxLength: maxLength(10) },
-    firtsName: { required, maxLength: maxLength(255) },
-    secondName: { required, maxLength: maxLength(255) },
-    email: { required, email },
-    select: { required },
-    checkbox: {
-      checked (val) {
-        return val
-      }
+    paciente: {
+      identificacion: { required, maxLength: maxLength(10) },
+      nombres: { required, maxLength: maxLength(255) },
+      apellidos: { required, maxLength: maxLength(255) },
+      email: { required, email },
+      tipoId: { required },
+      sexo: { required }
     }
   },
-  data: () => ({
-    cedula: '',
-    firtsName: '',
-    secondName: '',
-    email: '',
-    select: null,
-    edad: '',
-    items: [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4'
-    ],
-    date: new Date().toISOString().substr(0, 10),
-    menu: false,
-    checkbox: false
-  }),
+  data () {
+    return {
+      paciente: new Paciente('', '', '', '', '', '', new Date().toISOString().substr(0, 10)),
+      nacionalidades: ['V', 'E', 'P'],
+      listSexo: ['M', 'F'],
+      edad: '',
+      menu: false,
+      checkbox: false,
+      isInvalid: false,
+      messages: ''
+    }
+  },
   mounted () {
     pacienteService.get()
   },
   computed: {
-    checkboxErrors () {
+    identificacionErrors () {
       const errors = []
-      if (!this.$v.checkbox.$dirty) return errors
-      !this.$v.checkbox.checked && errors.push('You must agree to continue!')
+      console.log(this.$v.paciente.identificacion)
+      if (!this.$v.paciente.identificacion.$dirty) return errors
+      !this.$v.paciente.identificacion.maxLength && errors.push('Cedula must be at most 10 characters long')
+      !this.$v.paciente.identificacion.required && errors.push('Cedula is required.')
       return errors
     },
-    selectErrors () {
+    nombresErrors () {
       const errors = []
-      if (!this.$v.select.$dirty) return errors
-      !this.$v.select.required && errors.push('Item is required')
+      if (!this.$v.paciente.nombres.$dirty) return errors
+      !this.$v.paciente.nombres.maxLength && errors.push('First name must be at most 10 characters long')
+      !this.$v.paciente.nombres.required && errors.push('First name is required.')
       return errors
     },
-    cedulaErrors () {
+    apellidosErrors () {
       const errors = []
-      if (!this.$v.cedula.$dirty) return errors
-      !this.$v.cedula.maxLength && errors.push('Cedula must be at most 10 characters long')
-      !this.$v.cedula.required && errors.push('Cedula is required.')
-      return errors
-    },
-    firtsNameErrors () {
-      const errors = []
-      if (!this.$v.firtsName.$dirty) return errors
-      !this.$v.firtsName.maxLength && errors.push('First name must be at most 10 characters long')
-      !this.$v.firtsName.required && errors.push('First name is required.')
-      return errors
-    },
-    secondNameErrors () {
-      const errors = []
-      if (!this.$v.secondName.$dirty) return errors
-      !this.$v.secondName.maxLength && errors.push('Second name must be at most 10 characters long')
-      !this.$v.secondName.required && errors.push('Second name is required.')
+      if (!this.$v.paciente.apellidos.$dirty) return errors
+      !this.$v.paciente.apellidos.maxLength && errors.push('Second name must be at most 10 characters long')
+      !this.$v.paciente.apellidos.required && errors.push('Second name is required.')
       return errors
     },
     emailErrors () {
       const errors = []
-      if (!this.$v.email.$dirty) return errors
-      !this.$v.email.email && errors.push('Must be valid e-mail')
-      !this.$v.email.required && errors.push('E-mail is required')
+      if (!this.$v.paciente.email.$dirty) return errors
+      !this.$v.paciente.email.email && errors.push('Must be valid e-mail')
+      !this.$v.paciente.email.required && errors.push('E-mail is required')
+      return errors
+    },
+    tipoIdErrors () {
+      const errors = []
+      if (!this.$v.paciente.tipoId.$dirty) return errors
+      !this.$v.paciente.tipoId.required && errors.push('Nacionality is required')
+      return errors
+    },
+    sexoErrors () {
+      const errors = []
+      if (!this.$v.paciente.sexo.$dirty) return errors
+      !this.$v.paciente.sexo.required && errors.push('Sexo is required')
       return errors
     }
   },
   methods: {
-    submit () {
+    async submit () {
       this.$v.$touch()
+      console.log(this.$v.$invalid)
+      if (this.$v.$invalid) {
+        console.log(this.$v)
+        this.isInvalid = true
+        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+      } else {
+        this.isInvalid = false
+        const dataResult = await pacienteService.create(this.paciente)
+        if (!dataResult[0].isSucces) {
+          this.isInvalid = true
+          this.messages = dataResult[0].error.data.message
+        } else {
+          this.isInvalid = true
+          this.messages = dataResult[0].data.data.message
+        }
+        console.log(dataResult)
+      }
     },
     clear () {
       this.$v.$reset()
-      this.cedula = ''
-      this.firtsName = ''
-      this.secondName = ''
-      this.email = ''
-      this.select = null
-      this.checkbox = false
     },
     closeDatepicker () {
       const today = moment()
-      const dia = today.diff(this.date, 'day')
-      const mes = today.diff(this.date, 'month')
-      const year = today.diff(this.date, 'year')
+      const dia = today.diff(this.paciente.fechaNac, 'day')
+      const mes = today.diff(this.paciente.fechaNac, 'month')
+      const year = today.diff(this.paciente.fechaNac, 'year')
       let edad = '0'
       if (dia > 0 && mes > 0 && year < 5) {
         edad = year + 'A ' + mes + 'M '
@@ -227,7 +270,7 @@ export default {
         edad = mes + 'M ' + dia + ' D'
       }
       this.edad = edad
-      this.$refs.menu.save(this.date)
+      this.$refs.menu.save(this.paciente.fechaNac)
     },
     functionEvents (date) {
       console.log(this.date)

@@ -16,7 +16,8 @@ export default {
     return Service.post(resource + 'signup', {
       name: user.name,
       email: user.email,
-      password: user.password
+      password: user.password,
+      password_confirmation: user.passwordConfirmation
     })
   }
 }
