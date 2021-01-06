@@ -1,11 +1,13 @@
 export default class Paciente {
   constructor (tipoId, identificacion, nombres, apellidos, sexo, email, fechaNac) {
-    this.tipoId = tipoId
+    //eslint-disable-line
+    this.tipo_id = tipoId
     this.identificacion = identificacion
     this.nombres = nombres
     this.apellidos = apellidos
     this.sexo = sexo
     this.email = email
-    this.fechaNac = fechaNac
+    //eslint-disable-line
+    this.fecha_nac = fechaNac
   }
 }

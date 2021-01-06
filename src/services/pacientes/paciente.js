@@ -12,16 +12,7 @@ export default {
     return result
   },
   async create (data) {
-    const newPaciente = {
-      tipo_id: data.tipoId,
-      identificacion: data.identificacion,
-      nombres: data.nombres,
-      apellidos: data.apellidos,
-      sexo: data.sexo,
-      email: data.email,
-      fecha_nac: data.fechaNac
-    }
-    const [paciente, pacienteErr] = await handle(Service.post(resource, newPaciente))
+    const [paciente, pacienteErr] = await handle(Service.post(resource, data))
     const result = paciente !== undefined ? [{ isSucces: true, data: paciente }] : [{ isSucces: false, error: pacienteErr.response }]
     return result
   },

@@ -59,19 +59,19 @@
                           md="2"
                         >
                           <v-select
-                            v-model="paciente.tipoId"
+                            v-model="paciente.tipo_id"
                             :items="nacionalidades"
                             :error-messages="tipoIdErrors"
                             label="Nationality"
                             required
-                            @change="$v.paciente.tipoId.$touch()"
-                            @blur="$v.paciente.tipoId.$touch()">
+                            @change="$v.paciente.tipo_id.$touch()"
+                            @blur="$v.paciente.tipo_id.$touch()">
                           </v-select>
                         </v-col>
                         <v-col
                           cols="12"
-                          sm="3"
-                          md="3"
+                          sm="4"
+                          md="4"
                         >
                           <v-text-field
                             v-model="paciente.identificacion"
@@ -82,6 +82,111 @@
                             @blur="$v.paciente.identificacion.$touch()">
                           </v-text-field>
                         </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6">
+                          <v-text-field
+                            v-model="paciente.nombres"
+                            label="Firts name"
+                            :error-messages="nombresErrors"
+                            :counter="255"
+                            @input="$v.paciente.nombres.$touch()"
+                            @blur="$v.paciente.nombres.$touch()">
+                          </v-text-field>
+                        </v-col>
+                         <v-col
+                          cols="12"
+                          sm="6"
+                          md="6">
+                            <v-text-field
+                              v-model="paciente.apellidos"
+                              label="Second Name"
+                              :error-messages="apellidosErrors"
+                              :counter="255"
+                              @input="$v.paciente.apellidos.$touch()"
+                              @blur="$v.paciente.apellidos.$touch()">
+                            </v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="4"
+                          md="4">
+                            <v-menu
+                              ref='menu'
+                              v-model='menu'
+                              :close-on-content-click='false'
+                              :return-value.sync='paciente.fecha_nac'
+                              transition="scale-transition"
+                              offset-y
+                              min-width='290px'>
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-text-field
+                                  v-model="paciente.fecha_nac"
+                                  label="Birthdate"
+                                  prepend-icon="mdi-calendar"
+                                  readonly
+                                  v-bind="attrs"
+                                  v-on="on">
+                                </v-text-field>
+                              </template>
+                              <v-date-picker
+                                v-model="paciente.fecha_nac"
+                                no-title scrollable
+                                @click="functionEvents">
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                  text
+                                  color="primary"
+                                  @click="menu = false">
+                                  Cancel
+                                  </v-btn>
+                                  <v-btn
+                                    text
+                                    color="primary"
+                                    @click="closeDatepicker">
+                                    OK
+                                  </v-btn>
+                              </v-date-picker>
+                            </v-menu>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="2"
+                          md="2">
+                            <v-text-field
+                              v-model="edad"
+                              label="Edad"
+                              readonly>
+                            </v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="2"
+                          md="2">
+                          <v-select
+                            v-model="paciente.sexo"
+                            :items="listSexo"
+                            :error-messages="sexoErrors"
+                            label="Sexo"
+                            required
+                            @change="$v.paciente.sexo.$touch()"
+                            @blur="$v.paciente.sexo.$touch()">
+                          </v-select>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="4"
+                          md="4">
+                            <v-text-field
+                              v-model="paciente.email"
+                              :error-messages="emailErrors"
+                              label="E-mail"
+                              required
+                              @input="$v.paciente.email.$touch()"
+                              @blur="$v.paciente.email.$touch()">
+                            </v-text-field>
+                        </v-col>
                       </v-row>
                     </v-container>
                   </v-form>
@@ -90,12 +195,14 @@
                   <v-spacer></v-spacer>
                   <v-btn
                     color="blue darken-1"
-                    text>
+                    text
+                    @click="close">
                     Cancel
                   </v-btn>
                   <v-btn
                     color="blue darken-1"
-                    text>
+                    text
+                    @click="save">
                     Save
                   </v-btn>
                 </v-card-actions>
@@ -158,7 +265,7 @@ export default {
       nombres: { required, maxLength: maxLength(255) },
       apellidos: { required, maxLength: maxLength(255) },
       email: { required, email },
-      tipoId: { required },
+      tipo_id: { required },
       sexo: { required }
     }
   },
@@ -174,6 +281,7 @@ export default {
       nacionalidades: ['V', 'E', 'P'],
       listSexo: ['M', 'F'],
       edad: '',
+      menu: false,
       headers: [
         {
           text: 'Id',
@@ -243,8 +351,8 @@ export default {
     },
     tipoIdErrors () {
       const errors = []
-      if (!this.$v.paciente.tipoId.$dirty) return errors
-      !this.$v.paciente.tipoId.required && errors.push('Nacionality is required')
+      if (!this.$v.paciente.tipo_id.$dirty) return errors
+      !this.$v.paciente.tipo_id.required && errors.push('Nacionality is required')
       return errors
     },
     sexoErrors () {
@@ -265,6 +373,7 @@ export default {
   },
   created () {
     this.initialize()
+    console.log(this.paciente)
   },
   methods: {
     async initialize () {
@@ -275,13 +384,44 @@ export default {
         this.dataGrid = []
       }
     },
-    getitemcontrols () {
-      return 'item.actions'
+    async save () {
+      this.$v.$touch()
+      console.log(this.$v.$invalid)
+      if (this.$v.$invalid) {
+        this.isInvalid = true
+        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+      } else {
+        this.isInvalid = false
+        const dataResult = await pacienteService.create(this.paciente)
+        if (!dataResult[0].isSucces) {
+          this.isInvalid = true
+          this.messages = dataResult[0].error.data.message
+        } else {
+          this.isInvalid = true
+          this.messages = dataResult[0].data.data.message
+          const newData = {
+            tipo_id: this.paciente.tipo_id,
+            identificacion: this.paciente.identificacion,
+            nombres: this.paciente.nombres,
+            apellidos: this.paciente.apellidos,
+            sexo: this.paciente.sexo,
+            email: this.paciente.email,
+            fecha_nac: this.paciente.fecha_nac
+          }
+          if (this.editedIndex === -1) {
+            this.dataGrid.push(newData)
+            console.log(this.dataGrid)
+          }
+          this.close()
+        }
+      }
     },
     close () {
       this.dialog = false
       this.$nextTick(() => {
         this.editedIndex = -1
+        this.$v.$reset()
+        this.clearFormulario()
       })
     },
     closeDelete () {
@@ -295,9 +435,9 @@ export default {
     deleteItemConfirm () {},
     closeDatepicker () {
       const today = moment()
-      const dia = today.diff(this.paciente.fechaNac, 'day')
-      const mes = today.diff(this.paciente.fechaNac, 'month')
-      const year = today.diff(this.paciente.fechaNac, 'year')
+      const dia = today.diff(this.paciente.fecha_nac, 'day')
+      const mes = today.diff(this.paciente.fecha_nac, 'month')
+      const year = today.diff(this.paciente.fecha_nac, 'year')
       let edad = '0'
       if (dia > 0 && mes > 0 && year < 5) {
         edad = year + 'A ' + mes + 'M '
@@ -309,7 +449,20 @@ export default {
         edad = mes + 'M ' + dia + ' D'
       }
       this.edad = edad
-      this.$refs.menu.save(this.paciente.fechaNac)
+      this.$refs.menu.save(this.paciente.fecha_nac)
+    },
+    functionEvents (date) {
+      console.log(this.date)
+    },
+    clearFormulario () {
+      this.paciente.tipo_id = ''
+      this.paciente.identificacion = ''
+      this.paciente.nombres = ''
+      this.paciente.apellidos = ''
+      this.paciente.sexo = ''
+      this.paciente.email = ''
+      this.paciente.fecha_nac = new Date().toISOString().substr(0, 10)
+      this.edad = ''
     }
   }
 }
