@@ -6,14 +6,10 @@ const handle = (promise) => {
     .catch(error => Promise.resolve([undefined, error]))
 }
 export default {
-  async get () {
-    try {
-      const listarMarcas = 'nada'
-      return [{ isSucces: true, response: listarMarcas }]
-    } catch (error) {
-      console.error(error)
-      return [{ isSucces: false, error: error }]
-    }
+  async getList () {
+    const [listPacientes, listpacienteErr] = await handle(Service.get(resource))
+    const result = listPacientes !== undefined ? [{ isSucces: true, data: listPacientes }] : [{ isSucces: false, error: listpacienteErr.response }]
+    return result
   },
   async create (data) {
     const newPaciente = {

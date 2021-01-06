@@ -1,167 +1,157 @@
 <template>
-<v-container>
-  <v-row no-gutters>
-    <v-col cols="12" style="margin-bottom:12px;">
-      <v-toolbar dense>
-        <v-btn icon @click="submit">
-          <v-icon>mdi-checkbox-marked-circle</v-icon>
-        </v-btn>
-        <v-btn icon @click="clear">
-          <v-icon>mdi-delete-circle</v-icon>
-        </v-btn>
-      </v-toolbar>
-    </v-col>
-  </v-row>
-  <v-form>
-    <v-container class="grey lighten-5">
-      <v-row>
-        <v-snackbar :timeout="3000"
-        :value="isInvalid"
-        absolute
-        right
-        shaped
-        top
-        >
-         {{ messages }}
-        </v-snackbar>
-        <v-col
-          cols="12"
-          sm="2"
-          md="2"
-        >
-          <v-select v-model="paciente.tipoId"
-          :items="nacionalidades"
-          :error-messages="tipoIdErrors"
-          label="Nationality"
-          required
-          @change="$v.paciente.tipoId.$touch()"
-          @blur="$v.paciente.tipoId.$touch()">
-          </v-select>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="3"
-          md="3"
-        >
-          <v-text-field v-model="paciente.identificacion" label="Cedula"
-          :error-messages="identificacionErrors"
-          :counter="10"
-          @input="$v.paciente.identificacion.$touch()"
-          @blur="$v.paciente.identificacion.$touch()"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="1"></v-col>
-         <v-col
-          cols="12"
-          sm="5"
-          md="5"
-        >
-          <v-text-field v-model="paciente.nombres" label="Firts name"
-          :error-messages="nombresErrors"
-          :counter="255"
-          @input="$v.paciente.nombres.$touch()"
-          @blur="$v.paciente.nombres.$touch()"></v-text-field>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="5"
-          md="5"
-        >
-          <v-text-field v-model="paciente.apellidos" label="Second Name"
-          :error-messages="apellidosErrors"
-          :counter="255"
-          @input="$v.paciente.apellidos.$touch()"
-          @blur="$v.paciente.apellidos.$touch()"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          sm="1" md="1"></v-col>
-        <v-col
-          cols="12"
-          sm="2"
-          md="2"
-        >
-        <v-menu ref='menu' v-model='menu'
-          :close-on-content-click='false'
-          :return-value.sync='paciente.fechaNac'
-          transition="scale-transition"
-          offset-y
-          min-width='290px'>
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field v-model="paciente.fechaNac"
-              label="Birthdate"
-              prepend-icon="mdi-calendar"
-              readonly
-              v-bind="attrs"
-              v-on="on"
-            ></v-text-field>
-        </template>
-        <v-date-picker v-model="paciente.fechaNac" no-title scrollable
-            @click="functionEvents"
-          >
+  <v-card>
+    <v-card-title>
+      <v-text-field
+        v-model="search"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        hide-details>
+      </v-text-field>
+    </v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="dataGrid"
+      :search="search">
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>Pacientes</v-toolbar-title>
+          <v-divider
+            class="mx-4"
+            inset
+            vertical>
+          </v-divider>
           <v-spacer></v-spacer>
-            <v-btn text color="primary" @click="menu = false">
-             Cancel
-            </v-btn>
-            <v-btn text color="primary"
-              @click="closeDatepicker"
+          <v-dialog
+            v-model="dialog"
+            max-width="800px"
             >
-              OK
-            </v-btn>
-          </v-date-picker>
-        </v-menu>
-        </v-col>
-        <v-col
-          sm="1" md="1">
-        </v-col>
-         <v-col
-          cols="12"
-          sm="2"
-          md="2"
-        >
-          <v-text-field v-model="edad" label="Edad" readonly></v-text-field>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="2"
-          md="2"
-        >
-         <v-select v-model="paciente.sexo"
-          :items="listSexo"
-          :error-messages="tipoIdErrors"
-          label="Sexo"
-          required
-          @change="$v.paciente.sexo.$touch()"
-          @blur="$v.paciente.sexo.$touch()">
-          </v-select>
-        </v-col>
-        <v-col
-          cols="12"
-          sm="3"
-          md="3"
-        >
-        <v-text-field v-model="paciente.email" :error-messages="emailErrors"
-        label="E-mail"
-        required
-        @input="$v.paciente.email.$touch()"
-        @blur="$v.paciente.email.$touch()"
-        ></v-text-field>
-        </v-col>
-        </v-row>
-    </v-container>
-  </v-form>
-</v-container>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  color="primary"
+                  dark
+                  class="mb-2"
+                  v-bind="attrs"
+                  v-on="on">
+                  Nuevo Paciente
+                </v-btn>
+              </template>
+              <v-card>
+                <v-card-title>
+                  <span class="headline">{{ formTitle }}</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-form>
+                    <v-container class="grey lighten-5">
+                      <v-row>
+                        <v-snackbar
+                          :timeout="3000"
+                          :value="isInvalid"
+                          absolute
+                          right
+                          shaped
+                          top>
+                          {{ messages }}
+                        </v-snackbar>
+                        <v-col
+                          cols="12"
+                          sm="2"
+                          md="2"
+                        >
+                          <v-select
+                            v-model="paciente.tipoId"
+                            :items="nacionalidades"
+                            :error-messages="tipoIdErrors"
+                            label="Nationality"
+                            required
+                            @change="$v.paciente.tipoId.$touch()"
+                            @blur="$v.paciente.tipoId.$touch()">
+                          </v-select>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="3"
+                          md="3"
+                        >
+                          <v-text-field
+                            v-model="paciente.identificacion"
+                            label="Cedula"
+                            :error-messages="identificacionErrors"
+                            :counter="10"
+                            @input="$v.paciente.identificacion.$touch()"
+                            @blur="$v.paciente.identificacion.$touch()">
+                          </v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue darken-1"
+                    text>
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    color="blue darken-1"
+                    text>
+                    Save
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialogDelete" max-width="800px">
+              <v-card>
+                <v-card-title class="headline">Estas seguro que quiere eliminar el paciente?</v-card-title>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="closeDelete"
+                  >
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    color="blue darken-1"
+                    text
+                    @click="deleteItemConfirm"
+                  >
+                    OK
+                  </v-btn>
+                  <v-spacer></v-spacer>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:item.actions="item">
+        <v-icon
+          small
+          class="mr-2"
+          @click="editItem(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon
+          small
+          class="mr-2"
+          @click="deleteItem(item)">
+          mdi-delete
+        </v-icon>
+      </template>
+      <template v-slot:no-data></template>
+    </v-data-table>
+  </v-card>
 </template>
 <script>
 import moment from 'moment'
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, email } from 'vuelidate/lib/validators'
-import pacienteService from '../services/pacientes/paciente.js'
 import Paciente from '../models/Paciente-model.js'
+import pacienteService from '../services/pacientes/paciente.js'
+import { required, maxLength, email } from 'vuelidate/lib/validators'
 export default {
   mixins: [validationMixin],
-
   validations: {
     paciente: {
       identificacion: { required, maxLength: maxLength(10) },
@@ -175,19 +165,53 @@ export default {
   data () {
     return {
       paciente: new Paciente('', '', '', '', '', '', new Date().toISOString().substr(0, 10)),
+      search: '',
+      isInvalid: false,
+      dialog: false,
+      editedIndex: -1,
+      dialogDelete: false,
+      messages: '',
       nacionalidades: ['V', 'E', 'P'],
       listSexo: ['M', 'F'],
       edad: '',
-      menu: false,
-      checkbox: false,
-      isInvalid: false,
-      messages: ''
+      headers: [
+        {
+          text: 'Id',
+          value: 'id'
+        },
+        {
+          text: 'Tipo',
+          value: 'tipo_id'
+        },
+        {
+          text: 'Identificación',
+          value: 'identificacion'
+        },
+        {
+          text: 'Apellidos',
+          value: 'apellidos'
+        },
+        {
+          text: 'Nombres',
+          value: 'nombres'
+        },
+        {
+          text: 'Email',
+          value: 'email'
+        },
+        {
+          text: 'Actions',
+          value: 'actions',
+          sortable: false
+        }
+      ],
+      dataGrid: []
     }
   },
-  mounted () {
-    pacienteService.get()
-  },
   computed: {
+    formTitle () {
+      return this.editedIndex === -1 ? 'Nuevo paciente' : 'Editar paciente'
+    },
     identificacionErrors () {
       const errors = []
       console.log(this.$v.paciente.identificacion)
@@ -230,30 +254,45 @@ export default {
       return errors
     }
   },
+  watch: {
+    dialog (val) {
+      val || this.close()
+    },
+    dialogDelete (val) {
+      val || this.closeDelete()
+    }
+
+  },
+  created () {
+    this.initialize()
+  },
   methods: {
-    async submit () {
-      this.$v.$touch()
-      console.log(this.$v.$invalid)
-      if (this.$v.$invalid) {
-        console.log(this.$v)
-        this.isInvalid = true
-        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+    async initialize () {
+      const result = await pacienteService.getList()
+      if (result[0].isSucces) {
+        this.dataGrid = result[0].data.data.data
       } else {
-        this.isInvalid = false
-        const dataResult = await pacienteService.create(this.paciente)
-        if (!dataResult[0].isSucces) {
-          this.isInvalid = true
-          this.messages = dataResult[0].error.data.message
-        } else {
-          this.isInvalid = true
-          this.messages = dataResult[0].data.data.message
-        }
-        console.log(dataResult)
+        this.dataGrid = []
       }
     },
-    clear () {
-      this.$v.$reset()
+    getitemcontrols () {
+      return 'item.actions'
     },
+    close () {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedIndex = -1
+      })
+    },
+    closeDelete () {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedIndex = -1
+      })
+    },
+    editItem () {},
+    deleteItem () {},
+    deleteItemConfirm () {},
     closeDatepicker () {
       const today = moment()
       const dia = today.diff(this.paciente.fechaNac, 'day')
@@ -271,9 +310,6 @@ export default {
       }
       this.edad = edad
       this.$refs.menu.save(this.paciente.fechaNac)
-    },
-    functionEvents (date) {
-      console.log(this.date)
     }
   }
 }
