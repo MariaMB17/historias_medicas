@@ -19,7 +19,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "register" */ '../views/Register.vue')
   },
   {
-    path: '/principal',
+    path: '/principal/',
     name: 'Principal',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -27,9 +27,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Principal.vue'),
     children: [
       {
-        path: '/principal/paciente',
+        path: 'paciente',
         name: 'Paciente',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Paciente.vue')
+        component: () => import(/* webpackChunkName: "about" */ '../views/Paciente.vue'),
+        meta: {
+          requiresAuth: true
+        }
       }
     ]
   }
@@ -40,5 +43,4 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
 export default router

@@ -14,6 +14,15 @@
       :items="dataGrid"
       :search="search">
       <template v-slot:top>
+        <v-snackbar
+          :timeout="3000"
+          :value="isInvalid"
+          absolute
+          right
+          shaped
+          top>
+          {{ messages }}
+        </v-snackbar>
         <v-toolbar flat>
           <v-toolbar-title>Pacientes</v-toolbar-title>
           <v-divider
@@ -44,15 +53,6 @@
                   <v-form>
                     <v-container class="grey lighten-5">
                       <v-row>
-                        <v-snackbar
-                          :timeout="3000"
-                          :value="isInvalid"
-                          absolute
-                          right
-                          shaped
-                          top>
-                          {{ messages }}
-                        </v-snackbar>
                         <v-col
                           cols="12"
                           sm="2"
@@ -155,7 +155,7 @@
                           sm="2"
                           md="2">
                             <v-text-field
-                              v-model="edad"
+                              v-model="paciente.edad"
                               label="Edad"
                               readonly>
                             </v-text-field>
@@ -237,7 +237,7 @@
         <v-icon
           small
           class="mr-2"
-          @click="editItem(item)">
+          @click="editPaciente(item)">
           mdi-pencil
         </v-icon>
         <v-icon
@@ -271,7 +271,7 @@ export default {
   },
   data () {
     return {
-      paciente: new Paciente('', '', '', '', '', '', new Date().toISOString().substr(0, 10)),
+      paciente: new Paciente(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), ''),
       search: '',
       isInvalid: false,
       dialog: false,
@@ -280,7 +280,6 @@ export default {
       messages: '',
       nacionalidades: ['V', 'E', 'P'],
       listSexo: ['M', 'F'],
-      edad: '',
       menu: false,
       headers: [
         {
@@ -322,7 +321,6 @@ export default {
     },
     identificacionErrors () {
       const errors = []
-      console.log(this.$v.paciente.identificacion)
       if (!this.$v.paciente.identificacion.$dirty) return errors
       !this.$v.paciente.identificacion.maxLength && errors.push('Cedula must be at most 10 characters long')
       !this.$v.paciente.identificacion.required && errors.push('Cedula is required.')
@@ -373,7 +371,6 @@ export default {
   },
   created () {
     this.initialize()
-    console.log(this.paciente)
   },
   methods: {
     async initialize () {
@@ -386,31 +383,28 @@ export default {
     },
     async save () {
       this.$v.$touch()
-      console.log(this.$v.$invalid)
       if (this.$v.$invalid) {
         this.isInvalid = true
         this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
       } else {
         this.isInvalid = false
-        const dataResult = await pacienteService.create(this.paciente)
-        if (!dataResult[0].isSucces) {
+        let dataResult = []
+        if (this.editedIndex === -1) {
+          dataResult = await pacienteService.create(this.paciente)
+        } else {
+          dataResult = await pacienteService.update(this.paciente)
+        }
+        if (!dataResult[0]?.isSucces) {
           this.isInvalid = true
           this.messages = dataResult[0].error.data.message
         } else {
           this.isInvalid = true
           this.messages = dataResult[0].data.data.message
-          const newData = {
-            tipo_id: this.paciente.tipo_id,
-            identificacion: this.paciente.identificacion,
-            nombres: this.paciente.nombres,
-            apellidos: this.paciente.apellidos,
-            sexo: this.paciente.sexo,
-            email: this.paciente.email,
-            fecha_nac: this.paciente.fecha_nac
-          }
+          const newData = dataResult[0].data.data.data
           if (this.editedIndex === -1) {
             this.dataGrid.push(newData)
-            console.log(this.dataGrid)
+          } else {
+            Object.assign(this.dataGrid[this.editedIndex], newData)
           }
           this.close()
         }
@@ -430,14 +424,39 @@ export default {
         this.editedIndex = -1
       })
     },
-    editItem () {},
-    deleteItem () {},
-    deleteItemConfirm () {},
+    editPaciente (item) {
+      const itemSelect = item.item
+      this.editedIndex = this.dataGrid.findIndex(paciente => paciente.id === itemSelect.id)
+      itemSelect.edad = this.calcularEdad(itemSelect.fecha_nac)
+      this.paciente = itemSelect
+      this.dialog = true
+    },
+    deleteItem (item) {
+      const itemSelect = item.item
+      this.paciente = itemSelect
+      this.editedIndex = this.dataGrid.findIndex(paciente => paciente.id === itemSelect.id)
+      this.dialogDelete = true
+    },
+    async deleteItemConfirm () {
+      const idPaciente = this.paciente.id
+      const dataResult = await pacienteService.delete(idPaciente)
+      if (!dataResult[0]?.isSucces) {
+        this.isInvalid = true
+        this.messages = dataResult[0].error.data.message
+      } else {
+        this.dataGrid.splice(this.editedIndex, 1)
+      }
+      this.closeDelete()
+    },
     closeDatepicker () {
+      this.paciente.edad = this.calcularEdad(this.paciente.fecha_nac)
+      this.$refs.menu.save(this.paciente.fecha_nac)
+    },
+    calcularEdad (fechaNac) {
       const today = moment()
-      const dia = today.diff(this.paciente.fecha_nac, 'day')
-      const mes = today.diff(this.paciente.fecha_nac, 'month')
-      const year = today.diff(this.paciente.fecha_nac, 'year')
+      const dia = today.diff(fechaNac, 'day')
+      const mes = today.diff(fechaNac, 'month')
+      const year = today.diff(fechaNac, 'year')
       let edad = '0'
       if (dia > 0 && mes > 0 && year < 5) {
         edad = year + 'A ' + mes + 'M '
@@ -448,21 +467,13 @@ export default {
       } else if (dia > 0 && mes > 0 && year === 0) {
         edad = mes + 'M ' + dia + ' D'
       }
-      this.edad = edad
-      this.$refs.menu.save(this.paciente.fecha_nac)
+      return edad
     },
     functionEvents (date) {
       console.log(this.date)
     },
     clearFormulario () {
-      this.paciente.tipo_id = ''
-      this.paciente.identificacion = ''
-      this.paciente.nombres = ''
-      this.paciente.apellidos = ''
-      this.paciente.sexo = ''
-      this.paciente.email = ''
-      this.paciente.fecha_nac = new Date().toISOString().substr(0, 10)
-      this.edad = ''
+      this.paciente = new Paciente(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '')
     }
   }
 }

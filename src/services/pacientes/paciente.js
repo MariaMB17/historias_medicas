@@ -16,7 +16,14 @@ export default {
     const result = paciente !== undefined ? [{ isSucces: true, data: paciente }] : [{ isSucces: false, error: pacienteErr.response }]
     return result
   },
-  delete (id) {
-    return Service.delete(resource, id)
+  async update (data) {
+    const [paciente, pacienteErr] = await handle(Service.put(resource + '/' + data.id, data))
+    const result = paciente !== undefined ? [{ isSucces: true, data: paciente }] : [{ isSucces: false, error: pacienteErr.response }]
+    return result
+  },
+  async delete (id) {
+    const [paciente, pacienteErr] = await handle(Service.delete(resource + '/' + id))
+    const result = paciente !== undefined ? [{ isSucces: true, data: paciente }] : [{ isSucces: false, error: pacienteErr.response }]
+    return result
   }
 }
