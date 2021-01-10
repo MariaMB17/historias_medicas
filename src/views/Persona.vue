@@ -24,7 +24,7 @@
           {{ messages }}
         </v-snackbar>
         <v-toolbar flat>
-          <v-toolbar-title>Pacientes</v-toolbar-title>
+          <v-toolbar-title>Personas</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -42,7 +42,7 @@
                   class="mb-2"
                   v-bind="attrs"
                   v-on="on">
-                  Nuevo Paciente
+                  Nueva persona
                 </v-btn>
               </template>
               <v-card>
@@ -59,13 +59,13 @@
                           md="2"
                         >
                           <v-select
-                            v-model="paciente.tipo_id"
+                            v-model="persona.tipo_id"
                             :items="nacionalidades"
                             :error-messages="tipoIdErrors"
                             label="Nationality"
                             required
-                            @change="$v.paciente.tipo_id.$touch()"
-                            @blur="$v.paciente.tipo_id.$touch()">
+                            @change="$v.persona.tipo_id.$touch()"
+                            @blur="$v.persona.tipo_id.$touch()">
                           </v-select>
                         </v-col>
                         <v-col
@@ -74,12 +74,12 @@
                           md="4"
                         >
                           <v-text-field
-                            v-model="paciente.identificacion"
+                            v-model="persona.identificacion"
                             label="Cedula"
                             :error-messages="identificacionErrors"
                             :counter="10"
-                            @input="$v.paciente.identificacion.$touch()"
-                            @blur="$v.paciente.identificacion.$touch()">
+                            @input="$v.persona.identificacion.$touch()"
+                            @blur="$v.persona.identificacion.$touch()">
                           </v-text-field>
                         </v-col>
                         <v-col
@@ -87,12 +87,12 @@
                           sm="6"
                           md="6">
                           <v-text-field
-                            v-model="paciente.nombres"
+                            v-model="persona.nombres"
                             label="Firts name"
                             :error-messages="nombresErrors"
                             :counter="255"
-                            @input="$v.paciente.nombres.$touch()"
-                            @blur="$v.paciente.nombres.$touch()">
+                            @input="$v.persona.nombres.$touch()"
+                            @blur="$v.persona.nombres.$touch()">
                           </v-text-field>
                         </v-col>
                          <v-col
@@ -100,12 +100,12 @@
                           sm="6"
                           md="6">
                             <v-text-field
-                              v-model="paciente.apellidos"
+                              v-model="persona.apellidos"
                               label="Second Name"
                               :error-messages="apellidosErrors"
                               :counter="255"
-                              @input="$v.paciente.apellidos.$touch()"
-                              @blur="$v.paciente.apellidos.$touch()">
+                              @input="$v.persona.apellidos.$touch()"
+                              @blur="$v.persona.apellidos.$touch()">
                             </v-text-field>
                         </v-col>
                         <v-col
@@ -116,13 +116,13 @@
                               ref='menu'
                               v-model='menu'
                               :close-on-content-click='false'
-                              :return-value.sync='paciente.fecha_nac'
+                              :return-value.sync='persona.fecha_nac'
                               transition="scale-transition"
                               offset-y
                               min-width='290px'>
                               <template v-slot:activator="{ on, attrs }">
                                 <v-text-field
-                                  v-model="paciente.fecha_nac"
+                                  v-model="persona.fecha_nac"
                                   label="Birthdate"
                                   prepend-icon="mdi-calendar"
                                   readonly
@@ -131,7 +131,7 @@
                                 </v-text-field>
                               </template>
                               <v-date-picker
-                                v-model="paciente.fecha_nac"
+                                v-model="persona.fecha_nac"
                                 no-title scrollable
                                 @click="functionEvents">
                                 <v-spacer></v-spacer>
@@ -155,7 +155,7 @@
                           sm="2"
                           md="2">
                             <v-text-field
-                              v-model="paciente.edad"
+                              v-model="persona.edad"
                               label="Edad"
                               readonly>
                             </v-text-field>
@@ -165,13 +165,13 @@
                           sm="2"
                           md="2">
                           <v-select
-                            v-model="paciente.sexo"
+                            v-model="persona.sexo"
                             :items="listSexo"
                             :error-messages="sexoErrors"
                             label="Sexo"
                             required
-                            @change="$v.paciente.sexo.$touch()"
-                            @blur="$v.paciente.sexo.$touch()">
+                            @change="$v.persona.sexo.$touch()"
+                            @blur="$v.persona.sexo.$touch()">
                           </v-select>
                         </v-col>
                         <v-col
@@ -179,13 +179,65 @@
                           sm="4"
                           md="4">
                             <v-text-field
-                              v-model="paciente.email"
+                              v-model="persona.email"
                               :error-messages="emailErrors"
                               label="E-mail"
                               required
-                              @input="$v.paciente.email.$touch()"
-                              @blur="$v.paciente.email.$touch()">
+                              @input="$v.persona.email.$touch()"
+                              @blur="$v.persona.email.$touch()">
                             </v-text-field>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6">
+                          <v-select
+                            v-model="persona.especialidad_id"
+                            :items="dataEspecialidad"
+                            item-text="descripcion"
+                            item-value="id"
+                            label="Especialidad"
+                            :error-messages="especialidadErrors"
+                            required
+                            @change="$v.persona.especialidad_id.$touch()"
+                            @blur="$v.persona.especialidad_id.$touch()">>
+                          </v-select>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6">
+                          <v-select
+                            v-model="persona.area_id"
+                            :items="dataArea"
+                            item-text="descripcion"
+                            item-value="id"
+                            label="Area">
+                          </v-select>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="6"
+                          md="6">
+                          <v-select
+                            v-model="persona.tipo_persona_id "
+                            :items="dataTipoPersona"
+                            item-text="descripcion"
+                            item-value="id"
+                            label="Tipo de persona">
+                          </v-select>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          sm="12"
+                          md="12">
+                          <v-textarea
+                            v-model="persona.direccion"
+                            auto-grow
+                            label="Direccion"
+                            rows="2"
+                            row-height="20">
+                          </v-textarea>
                         </v-col>
                       </v-row>
                     </v-container>
@@ -210,7 +262,7 @@
             </v-dialog>
             <v-dialog v-model="dialogDelete" max-width="800px">
               <v-card>
-                <v-card-title class="headline">Estas seguro que quiere eliminar el paciente?</v-card-title>
+                <v-card-title class="headline">Estas seguro que quiere eliminar el registro?</v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
                   <v-btn
@@ -237,7 +289,7 @@
         <v-icon
           small
           class="mr-2"
-          @click="editPaciente(item)">
+          @click="editPersona(item)">
           mdi-pencil
         </v-icon>
         <v-icon
@@ -254,24 +306,29 @@
 <script>
 import moment from 'moment'
 import { validationMixin } from 'vuelidate'
-import Paciente from '../models/Paciente-model.js'
-import pacienteService from '../services/pacientes/paciente.js'
+import Persona from '../models/Persona-model.js'
+import personaService from '../services/personas/persona.js'
+import especialidadService from '../services/especialidad/especialidad.js'
+import tipoPersonaService from '../services/tipoPersona/tipoPersona.js'
+import areaService from '../services/area/area.js'
 import { required, maxLength, email } from 'vuelidate/lib/validators'
 export default {
   mixins: [validationMixin],
   validations: {
-    paciente: {
+    persona: {
       identificacion: { required, maxLength: maxLength(10) },
       nombres: { required, maxLength: maxLength(255) },
       apellidos: { required, maxLength: maxLength(255) },
       email: { required, email },
       tipo_id: { required },
-      sexo: { required }
+      sexo: { required },
+      especialidad_id: { required }
     }
   },
   data () {
     return {
-      paciente: new Paciente(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), ''),
+      persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
+        '', 0, 0, 0, '', '', ''),
       search: '',
       isInvalid: false,
       dialog: false,
@@ -312,51 +369,61 @@ export default {
           sortable: false
         }
       ],
-      dataGrid: []
+      dataGrid: [],
+      dataArea: [],
+      dataTipoPersona: [],
+      dataEspecialidad: []
     }
   },
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? 'Nuevo paciente' : 'Editar paciente'
+      return this.editedIndex === -1 ? 'Nueva persona' : 'Editar persona'
     },
     identificacionErrors () {
       const errors = []
-      if (!this.$v.paciente.identificacion.$dirty) return errors
-      !this.$v.paciente.identificacion.maxLength && errors.push('Cedula must be at most 10 characters long')
-      !this.$v.paciente.identificacion.required && errors.push('Cedula is required.')
+      if (!this.$v.persona.identificacion.$dirty) return errors
+      !this.$v.persona.identificacion.maxLength && errors.push('Cedula must be at most 10 characters long')
+      !this.$v.persona.identificacion.required && errors.push('Cedula is required.')
       return errors
     },
     nombresErrors () {
       const errors = []
-      if (!this.$v.paciente.nombres.$dirty) return errors
-      !this.$v.paciente.nombres.maxLength && errors.push('First name must be at most 10 characters long')
-      !this.$v.paciente.nombres.required && errors.push('First name is required.')
+      if (!this.$v.persona.nombres.$dirty) return errors
+      !this.$v.persona.nombres.maxLength && errors.push('First name must be at most 10 characters long')
+      !this.$v.persona.nombres.required && errors.push('First name is required.')
       return errors
     },
     apellidosErrors () {
       const errors = []
-      if (!this.$v.paciente.apellidos.$dirty) return errors
-      !this.$v.paciente.apellidos.maxLength && errors.push('Second name must be at most 10 characters long')
-      !this.$v.paciente.apellidos.required && errors.push('Second name is required.')
+      if (!this.$v.persona.apellidos.$dirty) return errors
+      !this.$v.persona.apellidos.maxLength && errors.push('Second name must be at most 10 characters long')
+      !this.$v.persona.apellidos.required && errors.push('Second name is required.')
       return errors
     },
     emailErrors () {
       const errors = []
-      if (!this.$v.paciente.email.$dirty) return errors
-      !this.$v.paciente.email.email && errors.push('Must be valid e-mail')
-      !this.$v.paciente.email.required && errors.push('E-mail is required')
+      if (!this.$v.persona.email.$dirty) return errors
+      !this.$v.persona.email.email && errors.push('Must be valid e-mail')
+      !this.$v.persona.email.required && errors.push('E-mail is required')
       return errors
     },
     tipoIdErrors () {
       const errors = []
-      if (!this.$v.paciente.tipo_id.$dirty) return errors
-      !this.$v.paciente.tipo_id.required && errors.push('Nacionality is required')
+      if (!this.$v.persona.tipo_id.$dirty) return errors
+      !this.$v.persona.tipo_id.required && errors.push('Nacionality is required')
       return errors
     },
     sexoErrors () {
       const errors = []
-      if (!this.$v.paciente.sexo.$dirty) return errors
-      !this.$v.paciente.sexo.required && errors.push('Sexo is required')
+      if (!this.$v.persona.sexo.$dirty) return errors
+      !this.$v.persona.sexo.required && errors.push('Sexo is required')
+      return errors
+    },
+    especialidadErrors () {
+      const errors = []
+      console.log(this.$v.persona.especialidad_id.$model)
+      if (!this.$v.persona.especialidad_id.$dirty) return errors
+      !this.$v.persona.especialidad_id.required && errors.push('Especility is required')
       return errors
     }
   },
@@ -371,10 +438,34 @@ export default {
   },
   created () {
     this.initialize()
+    this.initializeArea()
+    this.initializeEspecilidad()
+    this.initializeTipoPersona()
   },
   methods: {
+    async initializeEspecilidad () {
+      const resultEspec = await especialidadService.getList()
+      this.dataEspecialidad = []
+      if (resultEspec[0].isSucces) {
+        this.dataEspecialidad = resultEspec[0].data.data.data
+      }
+    },
+    async initializeArea () {
+      const resultArea = await areaService.getList()
+      this.dataArea = []
+      if (resultArea[0].isSucces) {
+        this.dataArea = resultArea[0].data.data.data
+      }
+    },
+    async initializeTipoPersona () {
+      const resultTipoPersona = await tipoPersonaService.getList()
+      this.dataTipoPersona = []
+      if (resultTipoPersona[0].isSucces) {
+        this.dataTipoPersona = resultTipoPersona[0].data.data.data
+      }
+    },
     async initialize () {
-      const result = await pacienteService.getList()
+      const result = await personaService.getList()
       if (result[0].isSucces) {
         this.dataGrid = result[0].data.data.data
       } else {
@@ -382,6 +473,7 @@ export default {
       }
     },
     async save () {
+      console.log(this.persona.especialidad_id)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.isInvalid = true
@@ -390,9 +482,9 @@ export default {
         this.isInvalid = false
         let dataResult = []
         if (this.editedIndex === -1) {
-          dataResult = await pacienteService.create(this.paciente)
+          dataResult = await personaService.create(this.persona)
         } else {
-          dataResult = await pacienteService.update(this.paciente)
+          dataResult = await personaService.update(this.persona)
         }
         if (!dataResult[0]?.isSucces) {
           this.isInvalid = true
@@ -424,22 +516,22 @@ export default {
         this.editedIndex = -1
       })
     },
-    editPaciente (item) {
+    editPersona (item) {
       const itemSelect = item.item
-      this.editedIndex = this.dataGrid.findIndex(paciente => paciente.id === itemSelect.id)
+      this.editedIndex = this.dataGrid.findIndex(persona => persona.id === itemSelect.id)
       itemSelect.edad = this.calcularEdad(itemSelect.fecha_nac)
-      this.paciente = itemSelect
+      this.persona = itemSelect
       this.dialog = true
     },
     deleteItem (item) {
       const itemSelect = item.item
-      this.paciente = itemSelect
-      this.editedIndex = this.dataGrid.findIndex(paciente => paciente.id === itemSelect.id)
+      this.persona = itemSelect
+      this.editedIndex = this.dataGrid.findIndex(persona => persona.id === itemSelect.id)
       this.dialogDelete = true
     },
     async deleteItemConfirm () {
-      const idPaciente = this.paciente.id
-      const dataResult = await pacienteService.delete(idPaciente)
+      const idPersona = this.persona.id
+      const dataResult = await personaService.delete(idPersona)
       if (!dataResult[0]?.isSucces) {
         this.isInvalid = true
         this.messages = dataResult[0].error.data.message
@@ -449,8 +541,8 @@ export default {
       this.closeDelete()
     },
     closeDatepicker () {
-      this.paciente.edad = this.calcularEdad(this.paciente.fecha_nac)
-      this.$refs.menu.save(this.paciente.fecha_nac)
+      this.persona.edad = this.calcularEdad(this.persona.fecha_nac)
+      this.$refs.menu.save(this.persona.fecha_nac)
     },
     calcularEdad (fechaNac) {
       const today = moment()
@@ -473,7 +565,8 @@ export default {
       console.log(this.date)
     },
     clearFormulario () {
-      this.paciente = new Paciente(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '')
+      this.persona = new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
+        '', 0, 0, 0, '', '', '')
     }
   }
 }
