@@ -33,6 +33,14 @@ const routes = [
         meta: {
           requiresAuth: true
         }
+      },
+      {
+        path: 'pacienteEmergencia',
+        name: 'PacienteEmergencia',
+        component: () => import(/* webpackChunkName: "about" */ '../views/PacienteEmergencia.vue'),
+        meta: {
+          requiresAuth: true
+        }
       }
     ]
   },

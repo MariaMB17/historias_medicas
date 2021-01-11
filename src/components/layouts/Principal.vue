@@ -39,12 +39,13 @@
             </v-list-item-icon>
             <v-list-item-title>Registro de persona</v-list-item-title>
           </v-list-item>
-          <!-- <v-list-item link>
+          <v-list-item link
+            :to="{ path: 'principal/pacienteEmergencia'}">
             <v-list-item-icon>
               <v-icon>mdi-star</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>Starred</v-list-item-title>
-          </v-list-item> -->
+            <v-list-item-title>paciente emergencia</v-list-item-title>
+          </v-list-item>
         </v-list>
         </v-navigation-drawer>
       <v-app-bar app >
