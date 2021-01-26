@@ -25,5 +25,32 @@ export default {
     const [persona, listPersonaErr] = await handle(Service.delete(resource + '/' + id))
     const result = persona !== undefined ? [{ isSucces: true, data: persona }] : [{ isSucces: false, error: listPersonaErr.response }]
     return result
+  },
+  async getListMedicos () {
+    const [listPersonas, listPersonaErr] = await handle(Service.get(resource))
+    if (listPersonas) {
+      const resultData = listPersonas.data.data
+      const resultDataMedicos = resultData.filter(function (item) {
+        item.apellidosAndNombres = item.apellidos + ' ' + item.nombres
+        return item.tipo_persona_id === 1
+      })
+      return [{ isSucces: true, data: resultDataMedicos }]
+    } else {
+      return [{ isSucces: false, error: listPersonaErr.response }]
+    }
+  },
+  async getListPacientes () {
+    const [listPersonas, listPersonaErr] = await handle(Service.get(resource))
+    if (listPersonas) {
+      const resultData = listPersonas.data.data
+      const resultDataPacientes = resultData.map(function (item) {
+        item.apellidosAndNombres = item.apellidos + ' ' + item.nombres
+        return item
+      })
+      console.log(resultDataPacientes)
+      return [{ isSucces: true, data: resultDataPacientes }]
+    } else {
+      return [{ isSucces: false, error: listPersonaErr.response }]
+    }
   }
 }

@@ -9,7 +9,7 @@ import moment from 'moment-timezone'
 
 Vue.config.productionTip = false
 Vue.use(VueMoment, {
-  moment,
+  moment
 })
 
 new Vue({

@@ -1,7 +1,7 @@
 export default class Paciente {
   constructor (id, tipoId, identificacion, nombres, apellidos, sexo, email, fechaNac, edad,
     direccion, especialidadId, areaId, tipoPersonaId, especialidadDescription, areaDescription,
-    tipoPersonaDescription) {
+    tipoPersonaDescription, talla, peso) {
     this.id = id
     //eslint-disable-line
     this.tipo_id = tipoId
@@ -20,5 +20,7 @@ export default class Paciente {
     this.readonly_especialidadDescription = especialidadDescription
     this.readonly_areaDescription = areaDescription
     this.readonly_tipoPersonaDescription = tipoPersonaDescription
+    this.talla = talla
+    this.peso = peso
   }
 }

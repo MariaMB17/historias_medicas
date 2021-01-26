@@ -25,190 +25,232 @@
                     <v-dialog
                         v-model="dialog"
                         max-width="800px">
-                        <v-card>
-                            <v-card-title>
-                                <span class="headline">Registrar pacientes de emergencia</span>
-                            </v-card-title>
-                            <v-card-text>
-                                <v-tabs
-                                    v-model="tab"
-                                    grow>
-                                    <v-tab
-                                        v-for="item in items"
-                                        :key="item">
-                                        {{ item }}
-                                    </v-tab>
-                                </v-tabs>
-                                <v-tabs-items v-model="tab">
-                                    <v-tab-item>
-                                        <v-form>
-                                            <v-container class="grey lighten-5">
-                                                <v-row>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="4"
-                                                        md="4">
-                                                        <v-text-field
-                                                            label="Cedula del medico residente">
-                                                        </v-text-field>
-                                                    </v-col>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="8"
-                                                        md="8">
-                                                        <v-text-field
-                                                            label="Apellidos y nombres">
-                                                        </v-text-field>
-                                                    </v-col>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="2"
-                                                        md="2">
-                                                        <v-select
-                                                            :items="listTurnos"
-                                                            label="Turno">
-                                                        </v-select>
-                                                    </v-col>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="4"
-                                                        md="4">
-                                                        <v-menu
-                                                            ref='menu'
-                                                            v-model='menu'
-                                                            :close-on-content-click='false'
-                                                            :return-value.sync='date'
-                                                            transition="scale-transition"
-                                                            offset-y
-                                                            min-width='290px'>
-                                                            <template v-slot:activator="{ on, attrs }">
-                                                                <v-text-field
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                                color="primary"
+                                dark
+                                class="mb-2"
+                                v-bind="attrs"
+                                v-on="on">
+                                Nueva paciente
+                            </v-btn>
+                        </template>
+                        <v-card height="570px">
+                            <v-toolbar flat>
+                                <v-toolbar-title>
+                                    <div class="tittle-form">
+                                        Nuevo paciente
+                                    </div>
+                                </v-toolbar-title>
+                            </v-toolbar>
+                            <v-card-text style="background:#aeaeae; padding:10px;">
+                                <v-form>
+                                    <v-tabs
+                                        v-model="tab"
+                                        grow>
+                                        <v-tab
+                                            v-for="item in items"
+                                            :key="item">
+                                            {{ item }}
+                                        </v-tab>
+                                    </v-tabs>
+                                    <v-tabs-items v-model="tab" style="height:58vh; overflow: auto;">
+                                        <v-tab-item>
+                                            <v-card flat>
+                                                <v-card-text>
+                                                    <v-container class="grey lighten-5">
+                                                        <v-row>
+                                                            <v-col
+                                                                cols="12"
+                                                                sm="12"
+                                                                md="12">
+                                                                <v-autocomplete
+                                                                    v-model="value"
+                                                                    label="Nombre y apellidos"
+                                                                    item-text="apellidosAndNombres"
+                                                                    item-value="apellidosAndNombres"
+                                                                    :items="listaMedicos"
+                                                                    :loading="isLoading"
+                                                                    dense
+                                                                    filled
+                                                                >
+                                                                </v-autocomplete>
+                                                            </v-col>
+                                                            <v-col
+                                                                cols="12"
+                                                                sm="3"
+                                                                md="3">
+                                                            <v-select
+                                                                :items="listTurnos"
+                                                                label="Turno">
+                                                            </v-select>
+                                                        </v-col>
+                                                        <v-col
+                                                            cols="12"
+                                                            sm="4"
+                                                            md="4">
+                                                            <v-menu
+                                                                ref='menu'
+                                                                v-model='menu'
+                                                                :close-on-content-click='false'
+                                                                :return-value.sync='date'
+                                                                transition="scale-transition"
+                                                                offset-y
+                                                                min-width='290px'>
+                                                                <template v-slot:activator="{ on, attrs }">
+                                                                    <v-text-field
+                                                                        v-model="date"
+                                                                        label="Fecha"
+                                                                        prepend-icon="mdi-calendar"
+                                                                        readonly
+                                                                        v-bind="attrs"
+                                                                        v-on="on">
+                                                                    </v-text-field>
+                                                                </template>
+                                                                <v-date-picker
                                                                     v-model="date"
-                                                                    label="Fecha"
-                                                                    prepend-icon="mdi-calendar"
-                                                                    readonly
-                                                                    v-bind="attrs"
-                                                                    v-on="on">
-                                                                </v-text-field>
-                                                            </template>
-                                                            <v-date-picker
-                                                                v-model="date"
-                                                                no-title scrollable>
-                                                            <v-spacer></v-spacer>
-                                                            <v-btn
-                                                                text
-                                                                color="primary"
-                                                                @click="menu = false">
-                                                                Cancel
-                                                            </v-btn>
-                                                            <v-btn
-                                                                text
-                                                                color="primary"
-                                                                @click="closeDatepicker">
-                                                                OK
-                                                            </v-btn>
-                                                        </v-date-picker>
-                                                    </v-menu>
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </v-form>
-                                    </v-tab-item>
-                                    <v-tab-item>
-                                        <v-form>
-                                            <v-container class="grey lighten-5">
+                                                                    no-title scrollable>
+                                                                <v-spacer></v-spacer>
+                                                                <v-btn
+                                                                    text
+                                                                    color="primary"
+                                                                    @click="menu = false">
+                                                                    Cancel
+                                                                </v-btn>
+                                                                <v-btn
+                                                                    text
+                                                                    color="primary"
+                                                                    @click="closeDatepicker">
+                                                                    OK
+                                                                </v-btn>
+                                                                </v-date-picker>
+                                                            </v-menu>
+                                                        </v-col>
+                                                        </v-row>
+                                                    </v-container>
+                                            </v-card-text>
+                                        </v-card>
+                                        </v-tab-item>
+                                        <v-tab-item>
+                                          <v-card flat>
+                                            <v-card-text>
+                                              <v-container class="grey lighten-5">
                                                 <v-row>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="6"
-                                                        md="6">
-                                                        <v-text-field
-                                                            label="Apelidos y nombres ">
-                                                        </v-text-field>
+                                                  <v-col
+                                                    cols="12"
+                                                    sm="12"
+                                                    md="12">
+                                                      <v-autocomplete
+                                                        v-model="value"
+                                                        label="Nombre y apellidos"
+                                                        item-text="apellidosAndNombres"
+                                                        item-value="id"
+                                                        :items="listaPacientes"
+                                                        :loading="isLoading"
+                                                        dense
+                                                        filled
+                                                        @change="(event) => updatePciente(event, listaPacientes)">
+                                                      </v-autocomplete>
+                                                  </v-col>
+                                                  <v-col
+                                                    cols="12"
+                                                    sm="3"
+                                                    md="3">
+                                                      <v-text-field
+                                                        v-model="persona.identificacion"
+                                                        label="Cedula">
+                                                      </v-text-field>
+                                                  </v-col>
+                                                   <v-col
+                                                      cols="12"
+                                                      sm="3"
+                                                      md="3">
+                                                      <v-text-field
+                                                        v-model="persona.edad"
+                                                        label="Edad"
+                                                        readonly>
+                                                      </v-text-field>
                                                     </v-col>
                                                     <v-col
-                                                        cols="12"
-                                                        sm="3"
-                                                        md="3">
-                                                        <v-text-field
-                                                            label="cedula">
-                                                        </v-text-field>
+                                                      cols="12"
+                                                      sm="3"
+                                                      md="3">
+                                                      <v-text-field
+                                                        v-model="persona.sexo"
+                                                        label="sexo"
+                                                        readonly>
+                                                      </v-text-field>
                                                     </v-col>
                                                     <v-col
-                                                        cols="12"
-                                                        sm="3"
-                                                        md="3">
-                                                        <v-text-field
-                                                            label="Sexo">
-                                                        </v-text-field>
+                                                      cols="12"
+                                                      sm="3"
+                                                      md="3">
+                                                      <v-text-field
+                                                        v-model="persona.sexo"
+                                                        label="DEST"
+                                                        readonly>
+                                                      </v-text-field>
                                                     </v-col>
                                                     <v-col
-                                                        cols="12"
-                                                        sm="2"
-                                                        md="2">
-                                                        <v-text-field
-                                                            label="Edad">
-                                                        </v-text-field>
+                                                      cols="12"
+                                                      sm="12"
+                                                      md="12">
+                                                      <v-textarea
+                                                        v-model="persona.direccion"
+                                                        auto-grow
+                                                        label="Motivo de ingreso"
+                                                        rows="2"
+                                                        row-height="20">
+                                                      </v-textarea>
                                                     </v-col>
                                                     <v-col
-                                                        cols="12"
-                                                        sm="10"
-                                                        md="10">
-                                                        <v-textarea
-                                                            auto-grow
-                                                            label="Direccion"
-                                                            rows="2"
-                                                            row-height="10">
-                                                        </v-textarea>
+                                                      cols="12"
+                                                      sm="12"
+                                                      md="12">
+                                                      <v-textarea
+                                                        v-model="persona.direccion"
+                                                        auto-grow
+                                                        label="Impresion diagnostica"
+                                                        rows="2"
+                                                        row-height="20">
+                                                      </v-textarea>
                                                     </v-col>
                                                     <v-col
-                                                        cols="12"
-                                                        sm="12"
-                                                        md="12">
-                                                        <v-textarea
-                                                            auto-grow
-                                                            label="Motivo de Ingreso/Hallazgos clinicos"
-                                                            rows="2"
-                                                            row-height="10">
-                                                        </v-textarea>
-                                                    </v-col>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="12"
-                                                        md="12">
-                                                        <v-textarea
-                                                            auto-grow
-                                                            label="Impresión diagnostica"
-                                                            rows="2"
-                                                            row-height="10">
-                                                        </v-textarea>
-                                                    </v-col>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="2"
-                                                        md="2">
-                                                        <v-text-field
-                                                            label="Dest">
-                                                        </v-text-field>
-                                                    </v-col>
-                                                    <v-col
-                                                        cols="12"
-                                                        sm="10"
-                                                        md="10">
-                                                        <v-textarea
-                                                            auto-grow
-                                                            label="Observaciones"
-                                                            rows="2"
-                                                            row-height="10">
-                                                        </v-textarea>
+                                                      cols="12"
+                                                      sm="12"
+                                                      md="12">
+                                                      <v-textarea
+                                                        v-model="persona.direccion"
+                                                        auto-grow
+                                                        label="Observaciones"
+                                                        rows="2"
+                                                        row-height="20">
+                                                      </v-textarea>
                                                     </v-col>
                                                 </v-row>
-                                            </v-container>
-                                        </v-form>
-                                    </v-tab-item>
-                                    <v-tab-item>33</v-tab-item>
-                                </v-tabs-items>
+                                              </v-container>
+                                            </v-card-text>
+                                          </v-card>
+                                        </v-tab-item>
+                                        <v-tab-item></v-tab-item>
+                                    </v-tabs-items>
+                                </v-form>
                             </v-card-text>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn
+                                    color="blue darken-1"
+                                    text
+                                    @click="close">
+                                    Cancel
+                                </v-btn>
+                                <v-btn
+                                    color="blue darken-1"
+                                    text
+                                    @click="save">
+                                    Save
+                                </v-btn>
+                            </v-card-actions>
                         </v-card>
                     </v-dialog>
                 </v-toolbar>
@@ -231,15 +273,23 @@
     </v-card>
 </template>
 <script>
+import moment from 'moment'
 import personaService from '../services/personas/persona.js'
+import Persona from '../models/Persona-model.js'
 export default {
   data () {
     return {
+      persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
+        '', 0, 0, 0, '', '', '', '', 0),
       search: '',
       dialog: false,
       tab: null,
       menu: false,
       date: new Date().toISOString().substr(0, 10),
+      listaMedicos: [],
+      listaPacientes: [],
+      isLoading: false,
+      value: '',
       items: [
         'Datos del médico', 'Datos del Paciente', 'Enfermeras'
       ],
@@ -290,6 +340,35 @@ export default {
     this.initialize()
   },
   methods: {
+    save () {},
+    updatePciente (e, i) {
+      console.log(e)
+      console.log(i)
+      const dataPaciente = i.filter((item) => item.id === e)
+      if (dataPaciente.length > 0) {
+        this.persona.identificacion = dataPaciente[0].identificacion
+        this.persona.sexo = dataPaciente[0].sexo
+        this.persona.edad = this.calcularEdad(dataPaciente[0].fecha_nac)
+      }
+      console.log(dataPaciente)
+    },
+    calcularEdad (fechaNac) {
+      const today = moment()
+      const dia = today.diff(fechaNac, 'day')
+      const mes = today.diff(fechaNac, 'month')
+      const year = today.diff(fechaNac, 'year')
+      let edad = '0'
+      if (dia > 0 && mes > 0 && year < 5) {
+        edad = year + 'A ' + mes + 'M '
+      } else if (dia > 0 && mes > 0 && year > 5) {
+        edad = year + 'A'
+      } else if (dia > 0 && mes === 0 && year === 0) {
+        edad = dia + 'D'
+      } else if (dia > 0 && mes > 0 && year === 0) {
+        edad = mes + 'M ' + dia + ' D'
+      }
+      return edad
+    },
     close () {
       this.dialog = false
       this.$nextTick(() => {})
@@ -299,6 +378,18 @@ export default {
     },
     deleteItem (item) {},
     async initialize () {
+      const resultPacientes = await personaService.getListPacientes()
+      if (resultPacientes[0].isSucces) {
+        this.listaPacientes = resultPacientes[0].data
+      } else {
+        this.listaPacientes = []
+      }
+      const resultMedicos = await personaService.getListMedicos()
+      if (resultMedicos[0].isSucces) {
+        this.listaMedicos = resultMedicos[0].data
+      } else {
+        this.listaMedicos = []
+      }
       const result = await personaService.getList()
       if (result[0].isSucces) {
         this.dataGridPersona = result[0].data.data.data
@@ -312,3 +403,29 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+  @import '../assets/main.scss';
+  .v-card {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .v-card__text {
+    flex-grow: 1;
+    overflow: auto;
+  }
+  .v-toolbar__title {
+    width: 100%;
+  }
+  .tittle-form {
+    justify-content: center;
+    display: flex;
+    background: blue;
+    color: white;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+  }
+  .v-window__container {
+    height: 394px;
+  }
+</style>

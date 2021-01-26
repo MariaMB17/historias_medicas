@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class="change-color">
     <v-card-title>
       <v-text-field
         v-model="search"
@@ -33,7 +33,8 @@
           <v-spacer></v-spacer>
           <v-dialog
             v-model="dialog"
-            max-width="800px"
+            max-width="820px"
+            content-class="dialog-persona"
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
@@ -45,202 +46,259 @@
                   Nueva persona
                 </v-btn>
               </template>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">{{ formTitle }}</span>
-                </v-card-title>
-                <v-card-text>
+              <v-card height="590px">
+                <v-toolbar flat>
+                  <v-toolbar-title>
+                    <div class="tittle-form">
+                      {{ formTitle }}
+                    </div>
+                  </v-toolbar-title>
+                </v-toolbar>
+                <v-card-text style="background:#aeaeae; padding:10px;">
                   <v-form>
-                    <v-container class="grey lighten-5">
-                      <v-row>
-                        <v-col
-                          cols="12"
-                          sm="2"
-                          md="2"
-                        >
-                          <v-select
-                            v-model="persona.tipo_id"
-                            :items="nacionalidades"
-                            :error-messages="tipoIdErrors"
-                            label="Nationality"
-                            required
-                            @change="$v.persona.tipo_id.$touch()"
-                            @blur="$v.persona.tipo_id.$touch()">
-                          </v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="4"
-                          md="4"
-                        >
-                          <v-text-field
-                            v-model="persona.identificacion"
-                            label="Cedula"
-                            :error-messages="identificacionErrors"
-                            :counter="10"
-                            @input="$v.persona.identificacion.$touch()"
-                            @blur="$v.persona.identificacion.$touch()">
-                          </v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6">
-                          <v-text-field
-                            v-model="persona.nombres"
-                            label="Firts name"
-                            :error-messages="nombresErrors"
-                            :counter="255"
-                            @input="$v.persona.nombres.$touch()"
-                            @blur="$v.persona.nombres.$touch()">
-                          </v-text-field>
-                        </v-col>
-                         <v-col
-                          cols="12"
-                          sm="6"
-                          md="6">
-                            <v-text-field
-                              v-model="persona.apellidos"
-                              label="Second Name"
-                              :error-messages="apellidosErrors"
-                              :counter="255"
-                              @input="$v.persona.apellidos.$touch()"
-                              @blur="$v.persona.apellidos.$touch()">
-                            </v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="4"
-                          md="4">
-                            <v-menu
-                              ref='menu'
-                              v-model='menu'
-                              :close-on-content-click='false'
-                              :return-value.sync='persona.fecha_nac'
-                              transition="scale-transition"
-                              offset-y
-                              min-width='290px'>
-                              <template v-slot:activator="{ on, attrs }">
+                    <v-tabs fixed-tabs>
+                      <v-tab>
+                        Datos Personales
+                      </v-tab>
+                      <v-tab
+                        :disabled="isDisableTabEmpleado">
+                        Empleados
+                      </v-tab>
+                      <v-tab
+                        :disabled="isDisabledTabMedico">
+                        Datos médicos
+                      </v-tab>
+
+                      <v-tab-item style="height:58vh; overflow: auto;">
+                      <v-card flat>
+                        <v-card-text>
+                          <v-container class="grey lighten-5">
+                          <v-row>
+                            <v-col
+                                cols="12"
+                                sm="3"
+                                md="3">
+                                <v-select
+                                    v-model="persona.tipo_id"
+                                    :items="nacionalidades"
+                                    :error-messages="tipoIdErrors"
+                                    label="Nationality"
+                                    required
+                                    @change="$v.persona.tipo_id.$touch()"
+                                    @blur="$v.persona.tipo_id.$touch()">
+                                </v-select>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                md="4">
                                 <v-text-field
-                                  v-model="persona.fecha_nac"
-                                  label="Birthdate"
-                                  prepend-icon="mdi-calendar"
-                                  readonly
-                                  v-bind="attrs"
-                                  v-on="on">
+                                  v-model="persona.identificacion"
+                                  label="Cedula"
+                                  :error-messages="identificacionErrors"
+                                  :counter="10"
+                                  @input="$v.persona.identificacion.$touch()"
+                                  @blur="$v.persona.identificacion.$touch()">
                                 </v-text-field>
-                              </template>
-                              <v-date-picker
-                                v-model="persona.fecha_nac"
-                                no-title scrollable
-                                @click="functionEvents">
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                  text
-                                  color="primary"
-                                  @click="menu = false">
-                                  Cancel
-                                  </v-btn>
-                                  <v-btn
-                                    text
-                                    color="primary"
-                                    @click="closeDatepicker">
-                                    OK
-                                  </v-btn>
-                              </v-date-picker>
-                            </v-menu>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="2"
-                          md="2">
-                            <v-text-field
-                              v-model="persona.edad"
-                              label="Edad"
-                              readonly>
-                            </v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="2"
-                          md="2">
-                          <v-select
-                            v-model="persona.sexo"
-                            :items="listSexo"
-                            :error-messages="sexoErrors"
-                            label="Sexo"
-                            required
-                            @change="$v.persona.sexo.$touch()"
-                            @blur="$v.persona.sexo.$touch()">
-                          </v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="4"
-                          md="4">
-                            <v-text-field
-                              v-model="persona.email"
-                              :error-messages="emailErrors"
-                              label="E-mail"
-                              required
-                              @input="$v.persona.email.$touch()"
-                              @blur="$v.persona.email.$touch()">
-                            </v-text-field>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6">
-                          <v-select
-                            v-model="persona.especialidad_id"
-                            :items="dataEspecialidad"
-                            item-text="descripcion"
-                            item-value="id"
-                            label="Especialidad"
-                            :error-messages="especialidadErrors"
-                            required
-                            @change="$v.persona.especialidad_id.$touch()"
-                            @blur="$v.persona.especialidad_id.$touch()">>
-                          </v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6">
-                          <v-select
-                            v-model="persona.area_id"
-                            :items="dataArea"
-                            item-text="descripcion"
-                            item-value="id"
-                            label="Area">
-                          </v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="6"
-                          md="6">
-                          <v-select
-                            v-model="persona.tipo_persona_id "
-                            :items="dataTipoPersona"
-                            item-text="descripcion"
-                            item-value="id"
-                            label="Tipo de persona">
-                          </v-select>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          sm="12"
-                          md="12">
-                          <v-textarea
-                            v-model="persona.direccion"
-                            auto-grow
-                            label="Direccion"
-                            rows="2"
-                            row-height="20">
-                          </v-textarea>
-                        </v-col>
-                      </v-row>
-                    </v-container>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="5"
+                                md="5">
+                                <v-text-field
+                                  v-model="persona.nombres"
+                                  label="Firts name"
+                                  :error-messages="nombresErrors"
+                                  :counter="255"
+                                  @input="$v.persona.nombres.$touch()"
+                                  @blur="$v.persona.nombres.$touch()">
+                                </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="5"
+                                md="5">
+                                  <v-text-field
+                                    v-model="persona.apellidos"
+                                    label="Second Name"
+                                    :error-messages="apellidosErrors"
+                                    :counter="255"
+                                    @input="$v.persona.apellidos.$touch()"
+                                    @blur="$v.persona.apellidos.$touch()">
+                                  </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                md="4">
+                                <v-menu
+                                  ref='menu'
+                                  v-model='menu'
+                                  :close-on-content-click='false'
+                                  :return-value.sync='persona.fecha_nac'
+                                  transition="scale-transition"
+                                  offset-y
+                                  min-width='290px'>
+                                  <template v-slot:activator="{ on, attrs }">
+                                    <v-text-field
+                                      v-model="persona.fecha_nac"
+                                      label="Birthdate"
+                                      prepend-icon="mdi-calendar"
+                                      readonly
+                                      v-bind="attrs"
+                                      v-on="on">
+                                    </v-text-field>
+                                  </template>
+                                  <v-date-picker
+                                    v-model="persona.fecha_nac"
+                                    no-title scrollable
+                                    @click="functionEvents">
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                      text
+                                      color="primary"
+                                      @click="menu = false">
+                                      Cancel
+                                      </v-btn>
+                                      <v-btn
+                                        text
+                                        color="primary"
+                                        @click="closeDatepicker">
+                                        OK
+                                      </v-btn>
+                                  </v-date-picker>
+                                </v-menu>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="3"
+                                md="3">
+                                  <v-text-field
+                                    v-model="persona.edad"
+                                    label="Edad"
+                                    readonly>
+                                  </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="6"
+                                md="6">
+                                  <v-text-field
+                                    v-model="persona.email"
+                                    :error-messages="emailErrors"
+                                    label="E-mail"
+                                    required
+                                    @input="$v.persona.email.$touch()"
+                                    @blur="$v.persona.email.$touch()">
+                                  </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="6"
+                                md="6">
+                                <v-select
+                                  v-model="persona.tipo_persona_id "
+                                  :items="dataTipoPersona"
+                                  item-text="descripcion"
+                                  item-value="id"
+                                  label="Tipo de persona"
+                                  @change="activarTabPersona">
+                                </v-select>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                md="4">
+                                <v-select
+                                  v-model="persona.sexo"
+                                  :items="listSexo"
+                                  :error-messages="sexoErrors"
+                                  label="Sexo"
+                                  required
+                                  @change="$v.persona.sexo.$touch()"
+                                  @blur="$v.persona.sexo.$touch()">
+                                </v-select>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                md="4">
+                                <v-text-field
+                                  v-model="persona.talla"
+                                  label="Talla">
+                                </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="4"
+                                md="4">
+                                <v-text-field
+                                  v-model="persona.peso"
+                                  label="Peso">
+                                </v-text-field>
+                              </v-col>
+                              <v-col
+                                cols="12"
+                                sm="12"
+                                md="12">
+                                <v-textarea
+                                  v-model="persona.direccion"
+                                  auto-grow
+                                  label="Direccion"
+                                  rows="2"
+                                  row-height="20">
+                                </v-textarea>
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                          </v-card-text>
+                        </v-card>
+                      </v-tab-item>
+                      <v-tab-item style="height:58vh;overflow: auto;">
+                        <v-card flat>
+                          <v-card-text>
+                          <v-container class="grey lighten-5">
+                            <v-row>
+                              <v-col
+                                cols="12"
+                                sm="6"
+                                md="6">
+                                <v-select
+                                  v-model="persona.area_id"
+                                  :items="dataArea"
+                                  item-text="descripcion"
+                                  item-value="id"
+                                  label="Area">
+                                </v-select>
+                              </v-col>
+                            </v-row>
+                          </v-container>
+                          </v-card-text>
+                        </v-card>
+                      </v-tab-item>
+                      <v-tab-item style="height:58vh;overflow: auto;">
+                        <v-card flat>
+                          <v-card-text>
+                          <v-container class="grey lighten-5">
+                            <v-row>
+                              <v-col
+                                cols="12"
+                                sm="6"
+                                md="6">
+                                <v-select
+                                v-model="persona.especialidad_id"
+                                :items="dataEspecialidad"
+                                item-text="descripcion"
+                                item-value="id"
+                                label="Especialidad">
+                              </v-select>
+                            </v-col>
+                          </v-row>
+                        </v-container>
+                        </v-card-text>
+                      </v-card>
+                    </v-tab-item>
+                    </v-tabs>
                   </v-form>
                 </v-card-text>
                 <v-card-actions>
@@ -328,7 +386,7 @@ export default {
   data () {
     return {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
-        '', 0, 0, 0, '', '', ''),
+        '', 0, 0, 0, '', '', '', '', 0),
       search: '',
       isInvalid: false,
       dialog: false,
@@ -338,6 +396,8 @@ export default {
       nacionalidades: ['V', 'E', 'P'],
       listSexo: ['M', 'F'],
       menu: false,
+      isDisabledTabMedico: true,
+      isDisableTabEmpleado: true,
       headers: [
         {
           text: 'Id',
@@ -453,6 +513,7 @@ export default {
     async initializeArea () {
       const resultArea = await areaService.getList()
       this.dataArea = []
+      this.persona.area_id = 2
       if (resultArea[0].isSucces) {
         this.dataArea = resultArea[0].data.data.data
       }
@@ -473,7 +534,6 @@ export default {
       }
     },
     async save () {
-      console.log(this.persona.especialidad_id)
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.isInvalid = true
@@ -508,12 +568,16 @@ export default {
         this.editedIndex = -1
         this.$v.$reset()
         this.clearFormulario()
+        this.isDisabledTabMedico = true
+        this.isDisableTabEmpleado = true
       })
     },
     closeDelete () {
       this.dialogDelete = false
       this.$nextTick(() => {
         this.editedIndex = -1
+        this.isDisabledTabMedico = true
+        this.isDisableTabEmpleado = true
       })
     },
     editPersona (item) {
@@ -528,6 +592,20 @@ export default {
       this.persona = itemSelect
       this.editedIndex = this.dataGrid.findIndex(persona => persona.id === itemSelect.id)
       this.dialogDelete = true
+    },
+    activarTabPersona (typePerson) {
+      this.isDisabledTabMedico = true
+      this.isDisableTabEmpleado = true
+      this.persona.especialidad_id = 2
+      this.persona.area_id = 2
+      if (typePerson === 1) {
+        this.isDisabledTabMedico = false
+        this.isDisableTabEmpleado = false
+        this.persona.especialidad_id = 2
+      } else if (typePerson !== 3) {
+        this.isDisableTabEmpleado = false
+        this.persona.area_id = 2
+      }
     },
     async deleteItemConfirm () {
       const idPersona = this.persona.id
@@ -566,8 +644,34 @@ export default {
     },
     clearFormulario () {
       this.persona = new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
-        '', 0, 0, 0, '', '', '')
+        '', 0, 0, 0, '', '', 0)
     }
   }
 }
 </script>
+<style lang="scss">
+  @import '../assets/main.scss';
+  .v-card {
+    display: flex !important;
+    flex-direction: column;
+  }
+  .v-card__text {
+    flex-grow: 1;
+    overflow: auto;
+  }
+  .v-toolbar__title {
+    width: 100%;
+  }
+  .tittle-form {
+    justify-content: center;
+    display: flex;
+    background: blue;
+    color: white;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+  }
+  .v-window__container {
+    height: 394px;
+  }
+</style>
