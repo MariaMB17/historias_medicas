@@ -65,10 +65,10 @@
                                                                 sm="12"
                                                                 md="12">
                                                                 <v-autocomplete
-                                                                    v-model="value"
+                                                                    v-model="datosMedicos.persona_id"
                                                                     label="Nombre y apellidos"
                                                                     item-text="apellidosAndNombres"
-                                                                    item-value="apellidosAndNombres"
+                                                                    item-value="id"
                                                                     :items="listaMedicos"
                                                                     :loading="isLoading"
                                                                     dense
@@ -81,6 +81,7 @@
                                                                 sm="3"
                                                                 md="3">
                                                             <v-select
+                                                                v-model="datosMedicos.turno"
                                                                 :items="listTurnos"
                                                                 label="Turno">
                                                             </v-select>
@@ -93,13 +94,13 @@
                                                                 ref='menu'
                                                                 v-model='menu'
                                                                 :close-on-content-click='false'
-                                                                :return-value.sync='date'
+                                                                :return-value.sync='datosMedicos.fecha'
                                                                 transition="scale-transition"
                                                                 offset-y
                                                                 min-width='290px'>
                                                                 <template v-slot:activator="{ on, attrs }">
                                                                     <v-text-field
-                                                                        v-model="date"
+                                                                        v-model="datosMedicos.fecha"
                                                                         label="Fecha"
                                                                         prepend-icon="mdi-calendar"
                                                                         readonly
@@ -108,7 +109,7 @@
                                                                     </v-text-field>
                                                                 </template>
                                                                 <v-date-picker
-                                                                    v-model="date"
+                                                                    v-model="datosMedicos.fecha"
                                                                     no-title scrollable>
                                                                 <v-spacer></v-spacer>
                                                                 <v-btn
@@ -141,7 +142,7 @@
                                                     sm="12"
                                                     md="12">
                                                       <v-autocomplete
-                                                        v-model="value"
+                                                        v-model="datosPacienteEmg.id"
                                                         label="Nombre y apellidos"
                                                         item-text="apellidosAndNombres"
                                                         item-value="id"
@@ -186,7 +187,7 @@
                                                       sm="3"
                                                       md="3">
                                                       <v-text-field
-                                                        v-model="persona.sexo"
+                                                        v-model="datosPacienteEmg.dest"
                                                         label="DEST"
                                                         readonly>
                                                       </v-text-field>
@@ -196,7 +197,7 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="persona.direccion"
+                                                        v-model="motivoIngreso.descripcion"
                                                         auto-grow
                                                         label="Motivo de ingreso"
                                                         rows="2"
@@ -208,7 +209,7 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="persona.direccion"
+                                                        v-model="diagnostico.descripcion"
                                                         auto-grow
                                                         label="Impresion diagnostica"
                                                         rows="2"
@@ -220,7 +221,7 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="persona.direccion"
+                                                        v-model="datosPacienteEmg.observaciones"
                                                         auto-grow
                                                         label="Observaciones"
                                                         rows="2"
@@ -276,16 +277,23 @@
 import moment from 'moment'
 import personaService from '../services/personas/persona.js'
 import Persona from '../models/Persona-model.js'
+import Diagnostico from '../models/Diagnostico-model.js'
+import MotivoIngreso from '../models/motivoIngreso-model.js'
+import DatosMedicoEmg from '../models/DatosMedicoEmg-model.js'
+import DatosPacienteEmg from '../models/DatosPacienteEmg-model.js'
 export default {
   data () {
     return {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', '', '', 0),
+      datosMedicos: new DatosMedicoEmg(-1, '', '', new Date().toISOString().substr(0, 10)),
+      datosPacienteEmg: new DatosPacienteEmg(-1, -1, -1, '', '', '', ''),
+      diagnostico: new Diagnostico(-1, ''),
+      motivoIngreso: new MotivoIngreso(-1, ''),
       search: '',
       dialog: false,
       tab: null,
       menu: false,
-      date: new Date().toISOString().substr(0, 10),
       listaMedicos: [],
       listaPacientes: [],
       isLoading: false,
@@ -340,7 +348,14 @@ export default {
     this.initialize()
   },
   methods: {
-    save () {},
+    save () {
+      alert('guardar')
+      this.datosPacienteEmg.motivoIng = this.motivoIngreso
+      this.datosPacienteEmg.diagnostico = this.diagnostico
+      console.log(this.datosPacienteEmg)
+      console.log(this.datosPacienteEmg.diagnostico.descripcion)
+      console.log(this.datosPacienteEmg.motivoIng.descripcion)
+    },
     updatePciente (e, i) {
       console.log(e)
       console.log(i)
@@ -349,6 +364,7 @@ export default {
         this.persona.identificacion = dataPaciente[0].identificacion
         this.persona.sexo = dataPaciente[0].sexo
         this.persona.edad = this.calcularEdad(dataPaciente[0].fecha_nac)
+        this.datosPacienteEmg.id = dataPaciente[0].id
       }
       console.log(dataPaciente)
     },
