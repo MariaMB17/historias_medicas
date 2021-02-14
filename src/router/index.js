@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import moment from 'moment'
 import VueRouter from 'vue-router'
 import Login from '../views/Login.vue'
 
@@ -57,9 +58,13 @@ const router = new VueRouter({
   routes
 })
 router.beforeEach((to, from, next) => {
+  console.log('rutasss')
   if (to.matched.some(route => route.meta.requiresAuth)) {
     const user = JSON.parse(localStorage.getItem('user'))
-    if (user && user.access_token) {
+    const now = moment(new Date(), 'YYY-MM-DD')
+    const expirateToken = moment(user.expires_at, 'YYYY-MM-DD')
+    const changeToken = now.isAfter(expirateToken)
+    if (user && user.access_token && !changeToken) {
       return next()
     } else {
       return next('/')

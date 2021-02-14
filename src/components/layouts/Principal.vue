@@ -32,7 +32,7 @@
             <v-list-item-title>My Files</v-list-item-title>
           </v-list-item> -->
           <v-list-item link
-            :to="{ path: 'principal/persona'}"
+            :to="`principal/persona`"
             @click="rutasPaciente">
             <v-list-item-icon>
               <v-icon>mdi-account-multiple</v-icon>
@@ -40,7 +40,7 @@
             <v-list-item-title>Registro de persona</v-list-item-title>
           </v-list-item>
           <v-list-item link
-            :to="{ path: 'principal/pacienteEmergencia'}">
+            :to="`principal/pacienteEmergencia`">
             <v-list-item-icon>
               <v-icon>mdi-star</v-icon>
             </v-list-item-icon>

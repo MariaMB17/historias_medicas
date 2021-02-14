@@ -5,4 +5,4 @@ const handle = (promise) => {
     .then(data => ([data, undefined]))
     .catch(error => Promise.resolve([undefined, error]))
 }
-export default{}
+export default {}

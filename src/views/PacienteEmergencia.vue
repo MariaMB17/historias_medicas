@@ -349,7 +349,6 @@ export default {
   },
   methods: {
     save () {
-      alert('guardar')
       this.datosPacienteEmg.motivoIng = this.motivoIngreso
       this.datosPacienteEmg.diagnostico = this.diagnostico
       console.log(this.datosPacienteEmg)

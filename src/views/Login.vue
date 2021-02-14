@@ -13,6 +13,7 @@
 </template>
 <script>
 import User from '../models/User-model.js'
+import moment from 'moment'
 export default {
   data () {
     return {
@@ -28,17 +29,21 @@ export default {
   },
   created () {
     this.$store.commit('SET_LAYOUT', 'login-layout')
-    if (this.loggedIn) {
-      this.$router.push('/principal')
+    const user = JSON.parse(localStorage.getItem('user'))
+    const now = moment(new Date(), 'YYYY-MM-DD')
+    const expirateToken = moment(user.expires_at, 'YYYY-MM-DD')
+    const changeToken = now.isAfter(expirateToken)
+    if (this.loggedIn && !changeToken) {
+      this.$router.replace({ path: '/principal' })
     } else {
-      this.$router.push('/')
+      this.$router.push({ path: '/' })
     }
   },
   methods: {
     loginUser: function (event) {
       if (this.user.email && this.user.password) {
         this.$store.dispatch('auth/login', this.user).then(() => {
-          this.$router.push('/principal')
+          this.$router.replace({ path: '/principal' })
         },
         error => {
           console.log(error)
