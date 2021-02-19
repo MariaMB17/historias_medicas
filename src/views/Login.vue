@@ -31,8 +31,8 @@ export default {
     this.$store.commit('SET_LAYOUT', 'login-layout')
     const user = JSON.parse(localStorage.getItem('user'))
     const now = moment(new Date(), 'YYYY-MM-DD')
-    const expirateToken = moment(user.expires_at, 'YYYY-MM-DD')
-    const changeToken = now.isAfter(expirateToken)
+    const expirateToken = (user) ? moment(user.expires_at, 'YYYY-MM-DD') : null
+    const changeToken = (user) ? now.isAfter(expirateToken) : false
     if (this.loggedIn && !changeToken) {
       this.$router.replace({ path: '/principal' })
     } else {

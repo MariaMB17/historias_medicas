@@ -1,4 +1,5 @@
 import Service from '../service.js'
+import authHeader from '../auth-header.js'
 const resource = 'api/auth/v1/persona'
 const handle = (promise) => {
   return promise
@@ -7,27 +8,27 @@ const handle = (promise) => {
 }
 export default {
   async getList () {
-    const [listPersonas, listPersonaErr] = await handle(Service.get(resource))
+    const [listPersonas, listPersonaErr] = await handle(Service.get(resource, { headers: authHeader() }))
     const result = listPersonas !== undefined ? [{ isSucces: true, data: listPersonas }] : [{ isSucces: false, error: listPersonaErr.response }]
     return result
   },
   async create (data) {
-    const [persona, listPersonaErr] = await handle(Service.post(resource, data))
+    const [persona, listPersonaErr] = await handle(Service.post(resource, data, { headers: authHeader() }))
     const result = persona !== undefined ? [{ isSucces: true, data: persona }] : [{ isSucces: false, error: listPersonaErr.response }]
     return result
   },
   async update (data) {
-    const [persona, listPersonaErr] = await handle(Service.put(resource + '/' + data.id, data))
+    const [persona, listPersonaErr] = await handle(Service.put(resource + '/' + data.id, data, { headers: authHeader() }))
     const result = persona !== undefined ? [{ isSucces: true, data: persona }] : [{ isSucces: false, error: listPersonaErr.response }]
     return result
   },
   async delete (id) {
-    const [persona, listPersonaErr] = await handle(Service.delete(resource + '/' + id))
+    const [persona, listPersonaErr] = await handle(Service.delete(resource + '/' + id, { headers: authHeader() }))
     const result = persona !== undefined ? [{ isSucces: true, data: persona }] : [{ isSucces: false, error: listPersonaErr.response }]
     return result
   },
   async getListMedicos () {
-    const [listPersonas, listPersonaErr] = await handle(Service.get(resource))
+    const [listPersonas, listPersonaErr] = await handle(Service.get(resource, { headers: authHeader() }))
     if (listPersonas) {
       const resultData = listPersonas.data.data
       const resultDataMedicos = resultData.filter(function (item) {
@@ -40,7 +41,7 @@ export default {
     }
   },
   async getListPacientes () {
-    const [listPersonas, listPersonaErr] = await handle(Service.get(resource))
+    const [listPersonas, listPersonaErr] = await handle(Service.get(resource, { headers: authHeader() }))
     if (listPersonas) {
       const resultData = listPersonas.data.data
       const resultDataPacientes = resultData.map(function (item) {
