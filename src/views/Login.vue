@@ -46,7 +46,6 @@ export default {
           this.$router.replace({ path: '/principal' })
         },
         error => {
-          console.log(error)
           this.message =
           (error.response && error.response.data) ||
           error.message || error.toString()

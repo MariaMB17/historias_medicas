@@ -481,7 +481,6 @@ export default {
     },
     especialidadErrors () {
       const errors = []
-      console.log(this.$v.persona.especialidad_id.$model)
       if (!this.$v.persona.especialidad_id.$dirty) return errors
       !this.$v.persona.especialidad_id.required && errors.push('Especility is required')
       return errors

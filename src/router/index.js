@@ -58,7 +58,6 @@ const router = new VueRouter({
   routes
 })
 router.beforeEach((to, from, next) => {
-  console.log('rutasss')
   if (to.matched.some(route => route.meta.requiresAuth)) {
     const user = JSON.parse(localStorage.getItem('user'))
     const now = moment(new Date(), 'YYY-MM-DD')

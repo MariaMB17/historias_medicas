@@ -351,13 +351,8 @@ export default {
     save () {
       this.datosPacienteEmg.motivoIng = this.motivoIngreso
       this.datosPacienteEmg.diagnostico = this.diagnostico
-      console.log(this.datosPacienteEmg)
-      console.log(this.datosPacienteEmg.diagnostico.descripcion)
-      console.log(this.datosPacienteEmg.motivoIng.descripcion)
     },
     updatePciente (e, i) {
-      console.log(e)
-      console.log(i)
       const dataPaciente = i.filter((item) => item.id === e)
       if (dataPaciente.length > 0) {
         this.persona.identificacion = dataPaciente[0].identificacion
@@ -365,7 +360,6 @@ export default {
         this.persona.edad = this.calcularEdad(dataPaciente[0].fecha_nac)
         this.datosPacienteEmg.id = dataPaciente[0].id
       }
-      console.log(dataPaciente)
     },
     calcularEdad (fechaNac) {
       const today = moment()

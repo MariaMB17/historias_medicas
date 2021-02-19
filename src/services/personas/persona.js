@@ -48,7 +48,6 @@ export default {
         item.apellidosAndNombres = item.apellidos + ' ' + item.nombres
         return item
       })
-      console.log(resultDataPacientes)
       return [{ isSucces: true, data: resultDataPacientes }]
     } else {
       return [{ isSucces: false, error: listPersonaErr.response }]

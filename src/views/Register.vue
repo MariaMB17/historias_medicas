@@ -30,7 +30,6 @@ export default {
     handleRegister () {
       this.$store.dispatch('auth/register', this.user).then(
         data => {
-          console.log(data.message)
           this.successful = true
           this.$router.push('/').catch(error => {
             if (error.name !== 'NavigationDuplicated') {
@@ -39,7 +38,6 @@ export default {
           })
         },
         error => {
-          console.log(this.user.passwordConfirmation)
           this.message =
           (error.request.status && error.data) ||
           error.data.message ||
