@@ -85,7 +85,7 @@ export default {
     getUser () {
       return {
         state: this.$store.state.auth.status.loggedIn,
-        name: this.$store.state.auth.status.user
+        name: this.$store.state.auth.status
       }
     }
   },
