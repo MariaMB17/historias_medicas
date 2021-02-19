@@ -3,11 +3,11 @@
     <v-navigation-drawer app
          v-model="drawer">
          <v-list>
-          <!-- <v-list-item class="px-2">
+          <v-list-item class="px-2">
             <v-list-item-avatar>
               <v-img src="https://randomuser.me/api/portraits/women/85.jpg"></v-img>
             </v-list-item-avatar>
-          </v-list-item> -->
+          </v-list-item>
 
           <v-list-item link>
             <v-list-item-content>
@@ -25,14 +25,14 @@
           nav
           dense
         >
-          <!-- <v-list-item link>
+          <v-list-item link>
             <v-list-item-icon>
-              <v-icon>mdi-folder</v-icon>
+              <v-icon>mdi-house</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>My Files</v-list-item-title>
-          </v-list-item> -->
+            <v-list-item-title>Inicio</v-list-item-title>
+          </v-list-item>
           <v-list-item link
-            :to="`principal/persona`"
+            :to="`/principal/persona`"
             @click="rutasPaciente">
             <v-list-item-icon>
               <v-icon>mdi-account-multiple</v-icon>
@@ -40,7 +40,7 @@
             <v-list-item-title>Registro de persona</v-list-item-title>
           </v-list-item>
           <v-list-item link
-            :to="`principal/pacienteEmergencia`">
+            :to="`/principal/pacienteEmergencia`">
             <v-list-item-icon>
               <v-icon>mdi-star</v-icon>
             </v-list-item-icon>
@@ -80,6 +80,17 @@ export default {
       }],
       title: 'Principal Layout'
     }
+  },
+  computed: {
+    getUser () {
+      return {
+        state: this.$store.state.auth.status.loggedIn,
+        name: this.$store.state.auth.status.user
+      }
+    }
+  },
+  created () {
+    console.log('maria      ', this.getUser)
   },
   methods: {
     rutasPaciente () {
