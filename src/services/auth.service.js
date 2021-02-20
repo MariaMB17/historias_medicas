@@ -26,6 +26,13 @@ export default {
       return response.data
     })
   },
+  async logout (user) {
+    return Service.post(resource + 'logout', {
+      headers: authHeader()
+    }).then(response => {
+      return response
+    })
+  },
   async getUserInf () {
     const user = await Service.get(resource + 'user', { headers: authHeader() })
     localStorage.setItem('userNane', JSON.stringify(user.data))

@@ -19,6 +19,15 @@
           </v-list-item>
         </v-list>
 
+        <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title class="title">
+               <v-btn block color="primary" @click="logout">Logout</v-btn>
+              </v-list-item-title>
+              <v-list-item-subtitle></v-list-item-subtitle>
+            </v-list-item-content>
+        </v-list-item>
+
         <v-divider></v-divider>
 
         <v-list
@@ -100,6 +109,9 @@ export default {
   methods: {
     rutasPaciente () {
       console.log(this.$router)
+    },
+    logout: function (event) {
+      this.$store.dispatch('auth/logout').then((data) => console.log(data))
     }
   },
   name: 'App'
