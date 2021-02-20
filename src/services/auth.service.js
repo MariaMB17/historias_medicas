@@ -27,10 +27,10 @@ export default {
     })
   },
   async logout (user) {
-    return Service.post(resource + 'logout', {
+    return Service.post(resource + 'logout', {}, {
       headers: authHeader()
     }).then(response => {
-      return response
+      return response.data
     })
   },
   async getUserInf () {

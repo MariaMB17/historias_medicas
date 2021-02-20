@@ -1,3 +1,3 @@
 import axios from 'axios'
-const baseURL = 'http://back-historias.localhost/'
+const baseURL = 'http://api.historias/'
 export default axios.create({ baseURL })

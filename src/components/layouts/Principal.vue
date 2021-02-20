@@ -111,7 +111,12 @@ export default {
       console.log(this.$router)
     },
     logout: function (event) {
-      this.$store.dispatch('auth/logout').then((data) => console.log(data))
+      this.$store.dispatch('auth/logout').then((data) => {
+        if (data.success) {
+          localStorage.clear()
+          this.$router.push({ path: '/' })
+        }
+      })
     }
   },
   name: 'App'
