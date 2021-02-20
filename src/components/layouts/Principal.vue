@@ -12,9 +12,9 @@
           <v-list-item link>
             <v-list-item-content>
               <v-list-item-title class="title">
-                Sandra Adams
+                {{ userLogueado.name }}
               </v-list-item-title>
-              <v-list-item-subtitle>sandra_a88@gmail.com</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ userLogueado.email }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -70,10 +70,12 @@
 </style>
 
 <script>
+import DatosUser from '@/models/DatosUser-model.js'
 export default {
   data () {
     return {
       drawer: null,
+      userLogueado: new DatosUser('', ''),
       items: [{
         icon: 'bubble_chart',
         title: 'Inspire'
@@ -82,15 +84,18 @@ export default {
     }
   },
   computed: {
-    getUser () {
-      return {
-        state: this.$store.state.auth.status.loggedIn,
-        name: this.$store.state.auth.status
-      }
+    getUserEmail () {
+      const usuario = JSON.parse(localStorage.getItem('userNane'))
+      return (usuario) ? usuario.email : ''
+    },
+    getUserName () {
+      const usuario = JSON.parse(localStorage.getItem('userNane'))
+      return (usuario) ? usuario.name : ''
     }
   },
   created () {
-    console.log('maria      ', this.getUser)
+    this.userLogueado.email = this.getUserEmail
+    this.userLogueado.name = this.getUserName
   },
   methods: {
     rutasPaciente () {

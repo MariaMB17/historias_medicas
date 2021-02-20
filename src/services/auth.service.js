@@ -21,10 +21,16 @@ export default {
     }).then(response => {
       if (response.data.access_token) {
         localStorage.setItem('user', JSON.stringify(response.data))
+        this.getUserInf()
       }
       return response.data
     })
   },
+  async getUserInf () {
+    const user = await Service.get(resource + 'user', { headers: authHeader() })
+    localStorage.setItem('userNane', JSON.stringify(user.data))
+  },
+
   register (user) {
     return Service.post(resource + 'signup', {
       name: user.name,
