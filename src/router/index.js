@@ -26,6 +26,9 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Principal.vue'),
+    meta: {
+      requiresAuth: true
+    },
     children: [
       {
         path: 'persona',
@@ -58,12 +61,15 @@ const router = new VueRouter({
   routes
 })
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(route => route.meta.requiresAuth)) {
+  if (to.matched.some(route => { console.log(route.meta.requiresAuth); return route.meta.requiresAuth })) {
     const user = JSON.parse(localStorage.getItem('user'))
-    const now = moment(new Date(), 'YYY-MM-DD')
-    const expirateToken = moment(user.expires_at, 'YYYY-MM-DD')
-    const changeToken = now.isAfter(expirateToken)
-    if (user && user.access_token && !changeToken) {
+    if (user && user.access_token) {
+      const now = moment(new Date(), 'YYY-MM-DD')
+      const expirateToken = moment(user.expires_at, 'YYYY-MM-DD')
+      const changeToken = now.isAfter(expirateToken)
+      if (changeToken) {
+        return next('/')
+      }
       return next()
     } else {
       return next('/')

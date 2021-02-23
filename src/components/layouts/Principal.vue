@@ -12,9 +12,9 @@
           <v-list-item link>
             <v-list-item-content>
               <v-list-item-title class="title">
-                {{ userLogueado.name }}
+                {{ userName }}
               </v-list-item-title>
-              <v-list-item-subtitle>{{ userLogueado.email }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ userEmail }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -89,22 +89,21 @@ export default {
         icon: 'bubble_chart',
         title: 'Inspire'
       }],
-      title: 'Principal Layout'
-    }
-  },
-  computed: {
-    getUserEmail () {
-      const usuario = JSON.parse(localStorage.getItem('userNane'))
-      return (usuario) ? usuario.email : ''
-    },
-    getUserName () {
-      const usuario = JSON.parse(localStorage.getItem('userNane'))
-      return (usuario) ? usuario.name : ''
+      title: 'Principal Layout',
+      userName: '',
+      userEmail: ''
     }
   },
   created () {
-    this.userLogueado.email = this.getUserEmail
-    this.userLogueado.name = this.getUserName
+    // console.log();
+    let usuario = JSON.parse(localStorage.getItem('userNane'))
+    this.userEmail = (usuario) ? usuario.email : ''
+
+    usuario = JSON.parse(localStorage.getItem('userNane'))
+    this.userName = (usuario) ? usuario.name : ''
+  },
+  computed: {
+
   },
   methods: {
     rutasPaciente () {
