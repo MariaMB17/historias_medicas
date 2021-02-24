@@ -95,15 +95,10 @@ export default {
     }
   },
   created () {
-    // console.log();
     let usuario = JSON.parse(localStorage.getItem('userNane'))
     this.userEmail = (usuario) ? usuario.email : ''
-
     usuario = JSON.parse(localStorage.getItem('userNane'))
     this.userName = (usuario) ? usuario.name : ''
-  },
-  computed: {
-
   },
   methods: {
     rutasPaciente () {

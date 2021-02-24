@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="login-container">
       <v-layout row>
           <v-flex xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
               <v-form>
@@ -55,3 +55,10 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .login-container {
+    margin-top: 150px;
+    margin-bottom: 150px;
+  }
+
+</style>

@@ -1,24 +1,34 @@
 <template>
-<v-app>
-    <v-toolbar class="fondo-imagen ">
-        <v-toolbar-title>Login</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-toolbar-items class="hidden-sm-and-down">
-            <v-btn @click="$router.push('/register')" text>Registrarse</v-btn>
-        </v-toolbar-items>
+  <v-app>
+    <v-toolbar>
+      <v-toolbar-title>Login</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items>
+        <v-btn @click="$router.push('/register')" text>Registrarse</v-btn>
+      </v-toolbar-items>
     </v-toolbar>
     <v-main class="main-login">
-        <router-view/>
+      <router-view />
     </v-main>
-</v-app>
+  </v-app>
 </template>
 <style scoped>
-    .fondo-imagen {
-        background-image: url("../../assets/images/doctor_digital_tablet.jpg");
-        background-size: cover;
-    }
-    .main-login{
-        background:#c4d0e4;
-
-    }
+header {
+  max-height: 56px;
+  background: #c4d0e4 !important;
+}
+.fondo-imagen {
+  background-image: url("../../assets/images/doctor_digital_tablet.jpg");
+  background-size: cover;
+}
+.main-login {
+  background-image: url("../../assets/images/doctor_digital_tablet.jpg");
+  background-image: no-repeat;
+  background-image: fixed;
+  background-image: center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
 </style>
