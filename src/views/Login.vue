@@ -1,6 +1,6 @@
 <template>
   <v-container class="login-container">
-      <v-layout row>
+      <v-layout row class="login-layout">
           <v-flex xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
               <v-form>
                   <v-text-field v-model="user.email" label="Email"></v-text-field>
@@ -60,5 +60,10 @@ export default {
     margin-top: 150px;
     margin-bottom: 150px;
   }
-
+  @media screen and (max-width: 600px) {
+    .login-layout{
+      padding-left: 30px;
+      padding-right: 30px;
+    }
+  }
 </style>
