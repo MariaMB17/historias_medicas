@@ -80,6 +80,7 @@
 
 <script>
 import DatosUser from '@/models/DatosUser-model.js'
+import { mapState } from 'vuex'
 export default {
   data () {
     return {
@@ -89,16 +90,11 @@ export default {
         icon: 'bubble_chart',
         title: 'Inspire'
       }],
-      title: 'Principal Layout',
-      userName: '',
-      userEmail: ''
+      title: 'Principal Layout'
     }
   },
-  created () {
-    let usuario = JSON.parse(localStorage.getItem('userNane'))
-    this.userEmail = (usuario) ? usuario.email : ''
-    usuario = JSON.parse(localStorage.getItem('userNane'))
-    this.userName = (usuario) ? usuario.name : ''
+  computed: {
+    ...mapState(['userName', 'userEmail'])
   },
   methods: {
     rutasPaciente () {

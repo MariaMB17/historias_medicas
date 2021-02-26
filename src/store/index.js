@@ -7,7 +7,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     layout: 'login-layout',
-    user: ''
+    userName: (JSON.parse(localStorage.getItem('userNane'))) ? JSON.parse(localStorage.getItem('userNane')).name : '',
+    userEmail: (JSON.parse(localStorage.getItem('userNane'))) ? JSON.parse(localStorage.getItem('userNane')).email : ''
   },
   getters: {},
   mutations: {
