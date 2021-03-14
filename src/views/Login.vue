@@ -13,6 +13,7 @@
 </template>
 <script>
 import User from '../models/User-model.js'
+import AuthService from '../services/auth.service'
 import moment from 'moment'
 export default {
   data () {
@@ -43,7 +44,15 @@ export default {
     loginUser: function (event) {
       if (this.user.email && this.user.password) {
         this.$store.dispatch('auth/login', this.user).then(() => {
-          this.$router.replace({ path: '/principal' })
+          AuthService.getUserInf().then(() => {
+            const userName = JSON.parse(localStorage.getItem('userNane')).name
+            const userEmail = JSON.parse(localStorage.getItem('userNane')).email
+            this.$store.commit('SET_USER_NAME', userName)
+            this.$store.commit('SET_USER_EMAIL', userEmail)
+            this.$router.replace({ path: '/principal' })
+          }, error => {
+            console.log(error)
+          })
         },
         error => {
           this.message =

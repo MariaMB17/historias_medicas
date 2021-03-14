@@ -14,6 +14,12 @@ export default new Vuex.Store({
   mutations: {
     SET_LAYOUT (state, newLayout) {
       state.layout = newLayout
+    },
+    SET_USER_NAME (state, name) {
+      state.userName = name
+    },
+    SET_USER_EMAIL (state, email) {
+      state.userEmail = email
     }
   },
   actions: {},

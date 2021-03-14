@@ -2,16 +2,6 @@ import Service from './service.js'
 import authHeader from './auth-header.js'
 const resource = 'api/auth/'
 export default {
-  async getUser () {
-    return Service.get(resource + 'user', {
-      headers: authHeader()
-    }).then(response => {
-      if (response) {
-        localStorage.setItem('userNane', JSON.stringify(response))
-      }
-      return response
-    })
-  },
   async login (user) {
     return Service.post(resource + 'login', {
       email: user.email,
@@ -21,7 +11,6 @@ export default {
     }).then(response => {
       if (response.data.access_token) {
         localStorage.setItem('user', JSON.stringify(response.data))
-        this.getUserInf()
       }
       return response.data
     })
@@ -34,8 +23,12 @@ export default {
     })
   },
   async getUserInf () {
-    const user = await Service.get(resource + 'user', { headers: authHeader() })
-    localStorage.setItem('userNane', JSON.stringify(user.data))
+    return Service.get(resource + 'user', {
+      headers: authHeader()
+    }).then(response => {
+      localStorage.setItem('userNane', JSON.stringify(response.data))
+      return response.data
+    })
   },
 
   register (user) {
