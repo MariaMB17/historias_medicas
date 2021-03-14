@@ -104,7 +104,9 @@ export default {
       this.$store.dispatch('auth/logout').then((data) => {
         if (data.success) {
           localStorage.clear()
-          this.$router.push({ path: '/' })
+          this.$router.push({ path: '/login' }).catch(err => {
+            throw err
+          })
         }
       })
     }
