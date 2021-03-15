@@ -1,11 +1,11 @@
 <template>
   <v-container class="login-container">
       <v-layout row class="login-layout">
-          <v-flex xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
+          <v-flex offset-lg4 lg4 xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
               <v-form>
                   <v-text-field v-model="user.email" label="Email"></v-text-field>
                   <v-text-field v-model="user.password" label="Contraseña" type="password"></v-text-field>
-                  <v-btn block color="primary" @click="loginUser">Entrar</v-btn>
+                  <v-btn color="primary" @click="loginUser">Entrar</v-btn>
               </v-form>
           </v-flex>
       </v-layout>
@@ -68,11 +68,19 @@ export default {
   .login-container {
     margin-top: 150px;
     margin-bottom: 150px;
+    padding-bottom: 70px !important;
+    padding-top: 50px !important;
+    display:block;
+    background-color:white
   }
   @media screen and (max-width: 600px) {
     .login-layout{
       padding-left: 30px;
       padding-right: 30px;
+      padding-bottom: 30px !important;
+      padding-top: 30px !important;
+      display:block;
+      background-color:white
     }
   }
 </style>

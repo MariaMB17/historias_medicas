@@ -1,6 +1,6 @@
 <template>
   <v-container>
-      <v-layout row>
+      <v-layout row class="splash">
           <v-flex xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
               <v-form>
                   <v-text-field label="Nombre de Usuario" v-model="user.name"></v-text-field>
@@ -86,3 +86,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.splash {
+    padding-bottom: 70px !important;
+    padding-top: 50px !important;
+    display:block;
+    background-color:white
+}
+</style>
