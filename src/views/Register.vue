@@ -8,6 +8,25 @@
                   <v-text-field label="Contraseña" type="password" v-model="user.password"></v-text-field>
                   <v-text-field label="Confirmar Contraseña" type="password" v-model="user.passwordConfirmation"></v-text-field>
                   <v-btn block color="primary" @click="handleRegister">Registrarse</v-btn>
+                  <v-snackbar
+                    v-model="snackbar"
+                    :color="colorValue"
+                    :bottom="y === 'bottom'"
+                    :right="x"
+                    :multi-line="mode === 'multi-line'"
+                    :timeout="timeout"
+                    :top="y === 'top'"
+                    :vertical="mode === 'vertical'"
+                  >
+                  {{ message }}
+                <v-btn
+                  dark
+                  text
+                  @click="snackbar = false"
+                >
+                  Close
+                </v-btn>
+                </v-snackbar>
               </v-form>
         </v-flex>
       </v-layout>
@@ -18,6 +37,12 @@ import User from '../models/User-model.js'
 export default {
   data () {
     return {
+      snackbar: false,
+      y: 'top',
+      x: 'right',
+      mode: '',
+      colorValue: 'cyan darken-2',
+      timeout: 4000,
       user: new User('', '', '', '', false),
       successful: false,
       message: ''
@@ -38,11 +63,23 @@ export default {
           })
         },
         error => {
-          this.message =
-          (error.request.status && error.data) ||
-          error.data.message ||
-          error.toString()
-          this.successful = false
+          if (error.request.status) {
+            this.successful = false
+            this.colorValue = 'error'
+            const objeto = JSON.parse(error.request.responseText)
+            if (objeto.errors) {
+              this.message = ''
+              const mensaje = Object.keys(objeto.errors).map(function (key, index) {
+                return objeto.errors[key][index]
+              })
+              this.message = mensaje[0]
+              this.snackbar = true
+            } else {
+              this.message = objeto.message
+              this.snackbar = true
+            }
+            console.log(objeto, this.message)
+          }
         }
       )
     }
