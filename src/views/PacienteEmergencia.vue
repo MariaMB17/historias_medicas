@@ -287,7 +287,7 @@ export default {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', '', '', 0),
       datosMedicos: new DatosMedicoEmg(-1, '', '', new Date().toISOString().substr(0, 10)),
-      datosPacienteEmg: new DatosPacienteEmg(-1, -1, -1, '', '', '', ''),
+      datosPacienteEmg: new DatosPacienteEmg(-1, -1, -1, '', '', '', '', '', ''),
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
       search: '',
@@ -351,6 +351,7 @@ export default {
     save () {
       this.datosPacienteEmg.motivoIng = this.motivoIngreso
       this.datosPacienteEmg.diagnostico = this.diagnostico
+      alert('save')
     },
     updatePciente (e, i) {
       const dataPaciente = i.filter((item) => item.id === e)
