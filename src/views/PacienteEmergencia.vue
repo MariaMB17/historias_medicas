@@ -142,7 +142,7 @@
                                                     sm="12"
                                                     md="12">
                                                       <v-autocomplete
-                                                        v-model="datosPacienteEmg.id"
+                                                        v-model="datosPacienteEmgDetalle.paciente_id"
                                                         label="Nombre y apellidos"
                                                         item-text="apellidosAndNombres"
                                                         item-value="id"
@@ -187,9 +187,8 @@
                                                       sm="3"
                                                       md="3">
                                                       <v-text-field
-                                                        v-model="datosPacienteEmg.dest"
-                                                        label="DEST"
-                                                        readonly>
+                                                        v-model="datosPacienteEmgDetalle.dest"
+                                                        label="DEST">
                                                       </v-text-field>
                                                     </v-col>
                                                     <v-col
@@ -197,7 +196,7 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="motivoIngreso.descripcion"
+                                                        v-model="datosPacienteEmgDetalle.motivoingreso"
                                                         auto-grow
                                                         label="Motivo de ingreso"
                                                         rows="2"
@@ -209,7 +208,7 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="diagnostico.descripcion"
+                                                        v-model="datosPacienteEmgDetalle.dignostico"
                                                         auto-grow
                                                         label="Impresion diagnostica"
                                                         rows="2"
@@ -221,7 +220,7 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="datosPacienteEmg.observaciones"
+                                                        v-model="datosPacienteEmgDetalle.observaciones"
                                                         auto-grow
                                                         label="Observaciones"
                                                         rows="2"
@@ -275,19 +274,25 @@
 </template>
 <script>
 import moment from 'moment'
+import { validationMixin } from 'vuelidate'
 import personaService from '../services/personas/persona.js'
+import pacienteEmergencia from '../services/pacienteEmergencia/pacienteEmergencia.js'
 import Persona from '../models/Persona-model.js'
 import Diagnostico from '../models/Diagnostico-model.js'
 import MotivoIngreso from '../models/motivoIngreso-model.js'
 import DatosMedicoEmg from '../models/DatosMedicoEmg-model.js'
-import DatosPacienteEmg from '../models/DatosPacienteEmg-model.js'
+import DatosPacienteEmgDetalle from '../models/DatosPacienteEmgDetalle-model.js'
 export default {
+  mixins: [validationMixin],
+  validations: {
+    datosPacienteEmgDetalle: {}
+  },
   data () {
     return {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', '', '', 0),
-      datosMedicos: new DatosMedicoEmg(-1, '', '', new Date().toISOString().substr(0, 10)),
-      datosPacienteEmg: new DatosPacienteEmg(-1, -1, -1, '', '', '', '', '', ''),
+      datosMedicos: new DatosMedicoEmg(-1, -1, '', new Date().toISOString().substr(0, 10)),
+      datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', ''),
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
       search: '',
@@ -297,6 +302,7 @@ export default {
       listaMedicos: [],
       listaPacientes: [],
       isLoading: false,
+      editedIndex: -1,
       value: '',
       items: [
         'Datos del médico', 'Datos del Paciente', 'Enfermeras'
@@ -348,10 +354,21 @@ export default {
     this.initialize()
   },
   methods: {
-    save () {
-      this.datosPacienteEmg.motivoIng = this.motivoIngreso
-      this.datosPacienteEmg.diagnostico = this.diagnostico
+    async save () {
       alert('save')
+      if (this.editedIndex === -1) {
+        let dataResult = []
+        let dataResultDetalle = []
+        dataResult = await pacienteEmergencia.create(this.datosMedicos)
+        if (dataResult[0].isSucces) {
+          const idPacienteEmergencia = dataResult[0].data.data.data.id
+          this.datosPacienteEmgDetalle.emergencia_id = idPacienteEmergencia
+          dataResultDetalle = await pacienteEmergencia.createDetalle(this.datosPacienteEmgDetalle)
+          if (dataResultDetalle[0].isSucces) {
+            console.log(dataResultDetalle[0].error.data.message)
+          } else {}
+        } else {}
+      } else {}
     },
     updatePciente (e, i) {
       const dataPaciente = i.filter((item) => item.id === e)
@@ -359,7 +376,7 @@ export default {
         this.persona.identificacion = dataPaciente[0].identificacion
         this.persona.sexo = dataPaciente[0].sexo
         this.persona.edad = this.calcularEdad(dataPaciente[0].fecha_nac)
-        this.datosPacienteEmg.id = dataPaciente[0].id
+        this.datosPacienteEmgDetalle.id = dataPaciente[0].id
       }
     },
     calcularEdad (fechaNac) {
