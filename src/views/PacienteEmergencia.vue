@@ -292,7 +292,7 @@ export default {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', '', '', 0),
       datosMedicos: new DatosMedicoEmg(-1, -1, '', new Date().toISOString().substr(0, 10)),
-      datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', ''),
+      datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', '', {}),
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
       search: '',
@@ -358,16 +358,9 @@ export default {
       alert('save')
       if (this.editedIndex === -1) {
         let dataResult = []
-        let dataResultDetalle = []
+        this.datosMedicos.detalle = this.datosPacienteEmgDetalle
         dataResult = await pacienteEmergencia.create(this.datosMedicos)
-        if (dataResult[0].isSucces) {
-          const idPacienteEmergencia = dataResult[0].data.data.data.id
-          this.datosPacienteEmgDetalle.emergencia_id = idPacienteEmergencia
-          dataResultDetalle = await pacienteEmergencia.createDetalle(this.datosPacienteEmgDetalle)
-          if (dataResultDetalle[0].isSucces) {
-            console.log(dataResultDetalle[0].error.data.message)
-          } else {}
-        } else {}
+        console.log(dataResult)
       } else {}
     },
     updatePciente (e, i) {
