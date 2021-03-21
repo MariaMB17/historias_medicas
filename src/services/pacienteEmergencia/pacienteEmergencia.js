@@ -1,6 +1,6 @@
 import Service from '../service.js'
 import authHeader from '../auth-header.js'
-const resource = 'api/auth/v1/pacienteEmergencia'
+const resource = 'api/auth/v1/emergencia'
 const resourceDetalle = 'api/auth/v1/pacienteEmergenciaDetalle'
 const handle = (promise) => {
   return promise

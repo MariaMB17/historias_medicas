@@ -292,7 +292,7 @@ export default {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', '', '', 0),
       datosMedicos: new DatosMedicoEmg(-1, -1, '', new Date().toISOString().substr(0, 10)),
-      datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', '', {}),
+      datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', ''),
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
       search: '',
@@ -355,10 +355,11 @@ export default {
   },
   methods: {
     async save () {
-      alert('save')
       if (this.editedIndex === -1) {
         let dataResult = []
-        this.datosMedicos.detalle = this.datosPacienteEmgDetalle
+        const detalle = []
+        detalle.push(this.datosPacienteEmgDetalle)
+        this.datosMedicos.detalle = detalle
         dataResult = await pacienteEmergencia.create(this.datosMedicos)
         console.log(dataResult)
       } else {}
