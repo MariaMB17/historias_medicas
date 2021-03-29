@@ -15,7 +15,16 @@
 import User from '../models/User-model.js'
 import AuthService from '../services/auth.service'
 import moment from 'moment'
+import { validationMixin } from 'vuelidate'
+import { required, maxLength, email } from 'vuelidate/lib/validators'
 export default {
+  mixins: [validationMixin],
+  validations: {
+    user: {
+      email: { required, email },
+      password: { required, maxLength: maxLength(255) }
+    }
+  },
   data () {
     return {
       user: new User('', '', '', '', false),
@@ -26,6 +35,20 @@ export default {
   computed: {
     loggedIn () {
       return this.$store.state.auth.status.loggedIn
+    },
+    passwordErrors () {
+      const errors = []
+      if (!this.$v.user.password.$dirty) return errors
+      !this.$v.user.password.maxLength && errors.push('Password must be at most 10 characters long')
+      !this.$v.user.password.required && errors.push('Password is required.')
+      return errors
+    },
+    emailErrors () {
+      const errors = []
+      if (!this.$v.user.email.$dirty) return errors
+      !this.$v.user.email.email && errors.push('Must be valid e-mail')
+      !this.$v.user.email.required && errors.push('E-mail is required')
+      return errors
     }
   },
   created () {
@@ -42,7 +65,12 @@ export default {
   },
   methods: {
     loginUser: function (event) {
-      if (this.user.email && this.user.password) {
+      this.$v.$touch()
+      if (this.$v.$invalid) {
+        this.isInvalid = true
+        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+      } else {
+        // if (this.user.email && this.user.password) {
         this.$store.dispatch('auth/login', this.user).then(() => {
           AuthService.getUserInf().then(() => {
             const userName = JSON.parse(localStorage.getItem('userNane')).name
