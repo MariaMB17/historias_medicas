@@ -71,6 +71,10 @@
                                                                     item-value="id"
                                                                     :items="listaMedicos"
                                                                     :loading="isLoading"
+                                                                    :error-messages="medicoErrors"
+                                                                    required
+                                                                    @change="$v.datosMedicos.medico.$touch()"
+                                                                    @blur="$v.datosMedicos.medico.$touch()"
                                                                     dense
                                                                     filled
                                                                 >
@@ -232,7 +236,31 @@
                                             </v-card-text>
                                           </v-card>
                                         </v-tab-item>
-                                        <v-tab-item></v-tab-item>
+                                        <v-tab-item>
+                                          <v-card flat>
+                                            <v-card-text>
+                                              <v-container class="grey lighten-5">
+                                                <v-row>
+                                                  <v-col
+                                                    cols="12"
+                                                    sm="12"
+                                                    md="12">
+                                                    <v-autocomplete
+                                                        v-model="datosMedicos.enfermera_id"
+                                                        label="Nombre y apellidos"
+                                                        item-text="apellidosAndNombres"
+                                                        item-value="id"
+                                                        :items="listaEnfermeros"
+                                                        :loading="isLoading"
+                                                        dense
+                                                        filled>
+                                                    </v-autocomplete>
+                                                  </v-col>
+                                                </v-row>
+                                              </v-container>
+                                            </v-card-text>
+                                          </v-card>
+                                        </v-tab-item>
                                     </v-tabs-items>
                                 </v-form>
                             </v-card-text>
@@ -282,16 +310,19 @@ import Diagnostico from '../models/Diagnostico-model.js'
 import MotivoIngreso from '../models/motivoIngreso-model.js'
 import DatosMedicoEmg from '../models/DatosMedicoEmg-model.js'
 import DatosPacienteEmgDetalle from '../models/DatosPacienteEmgDetalle-model.js'
+import { required } from 'vuelidate/lib/validators'
 export default {
   mixins: [validationMixin],
   validations: {
-    datosPacienteEmgDetalle: {}
+    datosMedicos: {
+      medico: { required }
+    }
   },
   data () {
     return {
       persona: new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', '', '', 0),
-      datosMedicos: new DatosMedicoEmg(-1, -1, '', new Date().toISOString().substr(0, 10)),
+      datosMedicos: new DatosMedicoEmg(-1, -1, '', new Date().toISOString().substr(0, 10), -1, []),
       datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', ''),
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
@@ -301,6 +332,7 @@ export default {
       menu: false,
       listaMedicos: [],
       listaPacientes: [],
+      listaEnfermeros: [],
       isLoading: false,
       editedIndex: -1,
       value: '',
@@ -353,6 +385,14 @@ export default {
   created () {
     this.initialize()
   },
+  computed: {
+    medicoErrors () {
+      const errors = []
+      if (!this.$v.datosMedicos.medico.$dirty) return errors
+      !this.$v.datosMedicos.medico.required && errors.push('Doctor is required.')
+      return errors
+    }
+  },
   methods: {
     async save () {
       if (this.editedIndex === -1) {
@@ -392,13 +432,27 @@ export default {
     },
     close () {
       this.dialog = false
-      this.$nextTick(() => {})
+      this.$nextTick(() => {
+        this.clearFormulario()
+      })
+    },
+    clearFormulario () {
+      this.persona = new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
+        '', 0, 0, 0, '', '', 0)
+      this.datosMedicos = new DatosMedicoEmg(-1, -1, '', new Date().toISOString().substr(0, 10), -1, [])
+      this.datosPacienteEmgDetalle = new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', '')
     },
     editPersona (item) {
       this.dialog = true
     },
     deleteItem (item) {},
     async initialize () {
+      const resultEnfermeros = await personaService.getListEnfermeros()
+      if (resultEnfermeros[0].isSucces) {
+        this.listaEnfermeros = resultEnfermeros[0].data
+      } else {
+        this.listaEnfermeros = []
+      }
       const resultPacientes = await personaService.getListPacientes()
       if (resultPacientes[0].isSucces) {
         this.listaPacientes = resultPacientes[0].data

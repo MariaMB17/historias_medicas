@@ -27,6 +27,19 @@ export default {
     const result = persona !== undefined ? [{ isSucces: true, data: persona }] : [{ isSucces: false, error: listPersonaErr.response }]
     return result
   },
+  async getListEnfermeros () {
+    const [listPersonas, listPersonaErr] = await handle(Service.get(resource, { headers: authHeader() }))
+    if (listPersonas) {
+      const resultData = listPersonas.data.data
+      const resultDataMedicos = resultData.filter(function (item) {
+        item.apellidosAndNombres = item.apellidos + ' ' + item.nombres
+        return item.tipo_persona_id === 3
+      })
+      return [{ isSucces: true, data: resultDataMedicos }]
+    } else {
+      return [{ isSucces: false, error: listPersonaErr.response }]
+    }
+  },
   async getListMedicos () {
     const [listPersonas, listPersonaErr] = await handle(Service.get(resource, { headers: authHeader() }))
     if (listPersonas) {
