@@ -2,9 +2,31 @@
   <v-container class="login-container">
       <v-layout row class="login-layout">
           <v-flex offset-lg4 lg4 xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
+              <v-snackbar
+                :timeout="3000"
+                :value="isInvalid"
+                absolute
+                right
+                shaped
+                top>
+                {{ messages }}
+              </v-snackbar>
               <v-form>
-                  <v-text-field v-model="user.email" label="Email"></v-text-field>
-                  <v-text-field v-model="user.password" label="Contraseña" type="password"></v-text-field>
+                  <v-text-field
+                    v-model="user.email"
+                    label="Email"
+                    :error-messages="emailErrors"
+                    @input="$v.user.email.$touch()"
+                    @blur="$v.user.email.$touch()"
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="user.password"
+                    :error-messages="passwordErrors"
+                    label="Contraseña"
+                    type="password"
+                    @input="$v.user.password.$touch()"
+                    @blur="$v.user.password.$touch()"
+                  ></v-text-field>
                   <v-btn color="primary" @click="loginUser">Entrar</v-btn>
               </v-form>
           </v-flex>
@@ -29,7 +51,8 @@ export default {
     return {
       user: new User('', '', '', '', false),
       loading: false,
-      message: ''
+      isInvalid: false,
+      messages: ''
     }
   },
   computed: {
@@ -65,10 +88,11 @@ export default {
   },
   methods: {
     loginUser: function (event) {
+      this.isInvalid = false
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.isInvalid = true
-        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+        this.messages = 'Usuario o contraseña invalidos'
       } else {
         // if (this.user.email && this.user.password) {
         this.$store.dispatch('auth/login', this.user).then(() => {
@@ -83,9 +107,10 @@ export default {
           })
         },
         error => {
-          this.message =
+          this.messages =
           (error.response && error.response.data) ||
           error.message || error.toString()
+          this.isInvalid = true
         })
       }
     }
