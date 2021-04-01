@@ -34,9 +34,10 @@
           nav
           dense
         >
-          <v-list-item link>
+          <v-list-item link
+            :to="`/principal`" exact>
             <v-list-item-icon>
-              <v-icon>mdi-house</v-icon>
+              <v-icon>mdi-home</v-icon>
             </v-list-item-icon>
             <v-list-item-title>Inicio</v-list-item-title>
           </v-list-item>
