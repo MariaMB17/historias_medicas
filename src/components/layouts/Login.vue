@@ -1,7 +1,10 @@
 <template>
   <v-app>
     <v-toolbar>
-      <v-toolbar-title>Login</v-toolbar-title>
+      <v-toolbar-items>
+        <v-btn link
+            :to="`/`"  text>Login</v-btn>
+      </v-toolbar-items>
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn @click="$router.push('/register')" text>Registrarse</v-btn>

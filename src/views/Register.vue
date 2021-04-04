@@ -3,11 +3,11 @@
       <v-layout row class="splash">
           <v-flex xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
               <v-form>
-                  <v-text-field label="Nombre de Usuario" v-model="user.name"></v-text-field>
+                  <v-text-field label="Nombre de usuario" v-model="user.name"></v-text-field>
                   <v-text-field label="Email" v-model="user.email"></v-text-field>
                   <v-text-field label="Contraseña" type="password" v-model="user.password"></v-text-field>
-                  <v-text-field label="Confirmar Contraseña" type="password" v-model="user.passwordConfirmation"></v-text-field>
-                  <v-btn block color="primary" @click="handleRegister">Registrarse</v-btn>
+                  <v-text-field label="Confirmar contraseña" type="password" v-model="user.passwordConfirmation"></v-text-field>
+                  <v-btn color="primary" @click="handleRegister">Registrarse</v-btn>
                   <v-snackbar
                     v-model="snackbar"
                     :color="colorValue"
@@ -17,15 +17,9 @@
                     :timeout="timeout"
                     :top="y === 'top'"
                     :vertical="mode === 'vertical'"
+                    shaped
                   >
                   {{ message }}
-                <v-btn
-                  dark
-                  text
-                  @click="snackbar = false"
-                >
-                  Close
-                </v-btn>
                 </v-snackbar>
               </v-form>
         </v-flex>
