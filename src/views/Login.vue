@@ -4,7 +4,7 @@
           <v-flex offset-lg4 lg4 xs12 sm6 m4 offset-xs0 offset-sm3 offset-m4>
               <v-snackbar
                 :timeout="3000"
-                :value="isInvalid"
+                v-model="isInvalid"
                 :color="colorValue"
                 absolute
                 right
@@ -54,7 +54,10 @@ export default {
       loading: false,
       isInvalid: false,
       messages: '',
-      colorValue: 'cyan darken-2'
+      colorValue: 'success',
+      text: 'Otro snackbar',
+      vertical: true,
+      snackbar: false
     }
   },
   computed: {
@@ -97,7 +100,6 @@ export default {
         this.colorValue = 'error'
         this.messages = 'Usuario o contraseña invalidos'
       } else {
-        // if (this.user.email && this.user.password) {
         this.$store.dispatch('auth/login', this.user).then(() => {
           AuthService.getUserInf().then(() => {
             const userName = JSON.parse(localStorage.getItem('userNane')).name

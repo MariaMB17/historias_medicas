@@ -8,6 +8,16 @@
         single-line
         hide-details>
       </v-text-field>
+      <v-snackbar
+            :timeout="3000"
+            v-model="isInvalid"
+            :color="colorValue"
+            absolute
+            right
+            shaped
+            top>
+            {{ messages }}
+          </v-snackbar>
     </v-card-title>
     <v-data-table
       :headers="headers"
@@ -25,11 +35,10 @@
           <v-dialog
             v-model="dialog"
             content-class="dialog-persona"
-            fullscreen
-            height="10%"
             transition="dialog-bottom-transition"
+            persistent
             >
-              <template v-slot:activator="{ on, attrs }">
+            <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   color="primary"
                   dark
@@ -40,16 +49,6 @@
                 </v-btn>
               </template>
               <v-card>
-                <v-snackbar
-                  :timeout="3000"
-                  :value="isInvalid"
-                  :color="colorValue"
-                  absolute
-                  right
-                  shaped
-                  top>
-                  {{ messages }}
-                </v-snackbar>
                 <v-toolbar
                   flat
                   dark
@@ -90,11 +89,10 @@
                         :disabled="isDisabledTabMedico">
                         Datos médicos
                       </v-tab>
-
-                      <v-tab-item style="height:58vh; overflow: auto;">
+                      <v-tab-item style="height:100%; overflow: auto;">
                       <v-card flat>
                         <v-card-text>
-                          <v-container class="grey lighten-5">
+                          <!-- <v-container class="grey lighten-5"> -->
                           <v-row>
                             <v-col
                                 cols="12"
@@ -272,7 +270,7 @@
                                 </v-textarea>
                               </v-col>
                             </v-row>
-                          </v-container>
+                          <!-- </v-container> -->
                           </v-card-text>
                         </v-card>
                       </v-tab-item>
@@ -407,7 +405,7 @@ export default {
       sound: true,
       widgets: false,
       isDisabledTabMedico: true,
-      colorValue: 'cyan darken-2',
+      colorValue: 'success',
       isDisableTabEmpleado: true,
       headers: [
         {
@@ -543,24 +541,24 @@ export default {
         this.dataGrid = []
       }
     },
-    save () {
-      debugger
+    async save () {
       this.isInvalid = false
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.isInvalid = true
-        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+        this.messages = 'Debe llenar los campos obligarotios'
         this.colorValue = 'error'
       } else {
         this.isInvalid = false
         let dataResult = []
         if (this.editedIndex === -1) {
-          dataResult = personaService.create(this.persona)
+          dataResult = await personaService.create(this.persona)
         } else {
-          dataResult = personaService.update(this.persona)
+          dataResult = await personaService.update(this.persona)
         }
         if (!dataResult[0]?.isSucces) {
           this.isInvalid = true
+          this.colorValue = 'success'
           this.messages = dataResult[0].error.data.message
         } else {
           this.isInvalid = true
@@ -664,9 +662,12 @@ export default {
 </script>
 <style lang="scss">
   @import '../assets/main.scss';
-  .v-card {
-    display: flex !important;
-    flex-direction: column;
+  // .v-card {
+  //   display: flex !important;
+  //   flex-direction: column;
+  // }
+  .v-snack--absolute {
+    z-index: 999;
   }
   .v-card__text {
     flex-grow: 1;
