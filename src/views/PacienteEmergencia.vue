@@ -14,6 +14,15 @@
             :items="dataGridPersona"
             :search="search">
             <template v-slot:top>
+              <v-snackbar
+                :timeout="3000"
+                :value="isInvalid"
+                absolute
+                right
+                shaped
+                top>
+                {{ messages }}
+              </v-snackbar>
                 <v-toolbar flat>
                     <v-toolbar-title>Personas</v-toolbar-title>
                     <v-divider
@@ -73,8 +82,8 @@
                                                                     :loading="isLoading"
                                                                     :error-messages="medicoErrors"
                                                                     required
-                                                                    @change="$v.datosMedicos.medico.$touch()"
-                                                                    @blur="$v.datosMedicos.medico.$touch()"
+                                                                    @change="$v.datosMedicos.persona_id.$touch()"
+                                                                    @blur="$v.datosMedicos.persona_id.$touch()"
                                                                     dense
                                                                     filled
                                                                 >
@@ -87,7 +96,11 @@
                                                             <v-select
                                                                 v-model="datosMedicos.turno"
                                                                 :items="listTurnos"
-                                                                label="Turno">
+                                                                label="Turno"
+                                                                :error-messages="turnoErrors"
+                                                                required
+                                                                @change="$v.datosMedicos.turno.$touch()"
+                                                                @blur="$v.datosMedicos.turno.$touch()">
                                                             </v-select>
                                                         </v-col>
                                                         <v-col
@@ -163,7 +176,8 @@
                                                     md="3">
                                                       <v-text-field
                                                         v-model="persona.identificacion"
-                                                        label="Cedula">
+                                                        label="Cedula"
+                                                        disabled>
                                                       </v-text-field>
                                                   </v-col>
                                                    <v-col
@@ -173,7 +187,7 @@
                                                       <v-text-field
                                                         v-model="persona.edad"
                                                         label="Edad"
-                                                        readonly>
+                                                        disabled>
                                                       </v-text-field>
                                                     </v-col>
                                                     <v-col
@@ -183,7 +197,7 @@
                                                       <v-text-field
                                                         v-model="persona.sexo"
                                                         label="sexo"
-                                                        readonly>
+                                                        disabled>
                                                       </v-text-field>
                                                     </v-col>
                                                     <v-col
@@ -192,7 +206,11 @@
                                                       md="3">
                                                       <v-text-field
                                                         v-model="datosPacienteEmgDetalle.dest"
-                                                        label="DEST">
+                                                        label="DEST"
+                                                        :error-messages="destErrors"
+                                                        required
+                                                        @input="$v.datosPacienteEmgDetalle.dest.$touch()"
+                                                        @blur="$v.datosPacienteEmgDetalle.dest.$touch()">
                                                       </v-text-field>
                                                     </v-col>
                                                     <v-col
@@ -204,7 +222,11 @@
                                                         auto-grow
                                                         label="Motivo de ingreso"
                                                         rows="2"
-                                                        row-height="20">
+                                                        row-height="20"
+                                                        :error-messages="motivoingresoErrors"
+                                                        required
+                                                        @input="$v.datosPacienteEmgDetalle.motivoingreso.$touch()"
+                                                        @blur="$v.datosPacienteEmgDetalle.motivoingreso.$touch()">
                                                       </v-textarea>
                                                     </v-col>
                                                     <v-col
@@ -216,7 +238,11 @@
                                                         auto-grow
                                                         label="Impresion diagnostica"
                                                         rows="2"
-                                                        row-height="20">
+                                                        row-height="20"
+                                                        :error-messages="dignosticoErrors"
+                                                        required
+                                                        @input="$v.datosPacienteEmgDetalle.dignostico.$touch()"
+                                                        @blur="$v.datosPacienteEmgDetalle.dignostico.$touch()">
                                                       </v-textarea>
                                                     </v-col>
                                                     <v-col
@@ -228,7 +254,11 @@
                                                         auto-grow
                                                         label="Observaciones"
                                                         rows="2"
-                                                        row-height="20">
+                                                        row-height="20"
+                                                        :error-messages="observacionesErrors"
+                                                        required
+                                                        @input="$v.datosPacienteEmgDetalle.observaciones.$touch()"
+                                                        @blur="$v.datosPacienteEmgDetalle.observaciones.$touch()">
                                                       </v-textarea>
                                                     </v-col>
                                                 </v-row>
@@ -315,7 +345,14 @@ export default {
   mixins: [validationMixin],
   validations: {
     datosMedicos: {
-      medico: { required }
+      persona_id: { required },
+      turno: { required }
+    },
+    datosPacienteEmgDetalle: {
+      dest: { required },
+      motivoingreso: { required },
+      dignostico: { required },
+      observaciones: { required }
     }
   },
   data () {
@@ -326,6 +363,7 @@ export default {
       datosPacienteEmgDetalle: new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', ''),
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
+      isInvalid: false,
       search: '',
       dialog: false,
       tab: null,
@@ -334,6 +372,7 @@ export default {
       listaPacientes: [],
       listaEnfermeros: [],
       isLoading: false,
+      messages: '',
       editedIndex: -1,
       value: '',
       items: [
@@ -388,21 +427,70 @@ export default {
   computed: {
     medicoErrors () {
       const errors = []
-      if (!this.$v.datosMedicos.medico.$dirty) return errors
-      !this.$v.datosMedicos.medico.required && errors.push('Doctor is required.')
+      console.log('paso')
+      if (!this.$v.datosMedicos.persona_id.$dirty) return errors
+      !this.$v.datosMedicos.persona_id.required && errors.push('Doctor is required.')
+      return errors
+    },
+    turnoErrors () {
+      const errors = []
+      if (!this.$v.datosMedicos.turno.$dirty) return errors
+      !this.$v.datosMedicos.turno.required && errors.push('Turno is required')
+      return errors
+    },
+    destErrors () {
+      const errors = []
+      if (!this.$v.datosPacienteEmgDetalle.dest.$dirty) return errors
+      !this.$v.datosPacienteEmgDetalle.dest.required && errors.push('Dest. is required')
+      return errors
+    },
+    motivoingresoErrors () {
+      const errors = []
+      if (!this.$v.datosPacienteEmgDetalle.motivoingreso.$dirty) return errors
+      !this.$v.datosPacienteEmgDetalle.motivoingreso.required && errors.push('Reason for admission is required')
+      return errors
+    },
+    dignosticoErrors () {
+      const errors = []
+      if (!this.$v.datosPacienteEmgDetalle.dignostico.$dirty) return errors
+      !this.$v.datosPacienteEmgDetalle.dignostico.required && errors.push('Diagnostic is required')
+      return errors
+    },
+    observacionesErrors () {
+      const errors = []
+      if (!this.$v.datosPacienteEmgDetalle.observaciones.$dirty) return errors
+      !this.$v.datosPacienteEmgDetalle.observaciones.required && errors.push('Observation is required')
       return errors
     }
   },
   methods: {
     async save () {
-      if (this.editedIndex === -1) {
-        let dataResult = []
-        const detalle = []
-        detalle.push(this.datosPacienteEmgDetalle)
-        this.datosMedicos.detalle = detalle
-        dataResult = await pacienteEmergencia.create(this.datosMedicos)
-        console.log(dataResult)
-      } else {}
+      this.$v.$touch()
+      const formDatosPacienteEmgDetalle = this.$v.datosPacienteEmgDetalle
+      const pacienteEmgDetalleErrors = Object.keys(formDatosPacienteEmgDetalle).filter(
+        function (key) {
+          return formDatosPacienteEmgDetalle[key]?.$error === true
+        })
+      const formDatosMedicos = this.$v.datosMedicos
+      const datosMedicosErrors = Object.keys(formDatosMedicos).filter(
+        function (key) {
+          return formDatosMedicos[key]?.$error === true
+        })
+      console.log(pacienteEmgDetalleErrors, datosMedicosErrors)
+      if (this.$v.$invalid) {
+        this.isInvalid = true
+        this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+      } else {
+        if (this.editedIndex === -1) {
+          this.isInvalid = true
+          let dataResult = []
+          const detalle = []
+          detalle.push(this.datosPacienteEmgDetalle)
+          this.datosMedicos.detalle = detalle
+          dataResult = await pacienteEmergencia.create(this.datosMedicos)
+          console.log(dataResult)
+        } else {}
+      }
     },
     updatePciente (e, i) {
       const dataPaciente = i.filter((item) => item.id === e)
@@ -502,5 +590,8 @@ export default {
   }
   .v-window__container {
     height: 394px;
+  }
+  .v-snack--absolute {
+    z-index: 999;
   }
 </style>
