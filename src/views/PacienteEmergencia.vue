@@ -15,13 +15,13 @@
             :search="search">
             <template v-slot:top>
               <v-snackbar
+                v-model="messages"
                 :timeout="3000"
                 :value="isInvalid"
                 absolute
                 right
                 shaped
                 top>
-                {{ messages }}
               </v-snackbar>
                 <v-toolbar flat>
                     <v-toolbar-title>Personas</v-toolbar-title>
@@ -59,8 +59,8 @@
                                         grow>
                                         <v-tab
                                             v-for="item in items"
-                                            :key="item">
-                                            {{ item }}
+                                            :key="item.name">
+                                            <span v-bind:style="item.fondo"> {{ item.name }} </span>
                                         </v-tab>
                                     </v-tabs>
                                     <v-tabs-items v-model="tab" style="height:58vh; overflow: auto;">
@@ -376,7 +376,24 @@ export default {
       editedIndex: -1,
       value: '',
       items: [
-        'Datos del médico', 'Datos del Paciente', 'Enfermeras'
+        {
+          name: 'Datos del médico',
+          fondo: {
+            color: 'black'
+          }
+        },
+        {
+          name: 'Datos del paciente',
+          fondo: {
+            color: 'black'
+          }
+        },
+        {
+          name: 'Enfermeras',
+          fondo: {
+            color: 'black'
+          }
+        }
       ],
       listTurnos: ['M', 'T', 'N'],
       headers: [
@@ -480,16 +497,59 @@ export default {
       if (this.$v.$invalid) {
         this.isInvalid = true
         this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
+        if (datosMedicosErrors.length > 0 && pacienteEmgDetalleErrors.length > 0) {
+          this.changeColorTabItem(2, true)
+        } else if (datosMedicosErrors.length > 0 && pacienteEmgDetalleErrors.length === 0) {
+          this.this.changeColorTabItem(0)
+        } else if (datosMedicosErrors.length === 0 && pacienteEmgDetalleErrors.length > 0) {
+          this.changeColorTabItem(1)
+        } else {
+          this.changeColorTabItem(-1)
+        }
       } else {
+        this.changeColorTabItem(-1)
         if (this.editedIndex === -1) {
-          this.isInvalid = true
+          this.isInvalid = false
           let dataResult = []
           const detalle = []
           detalle.push(this.datosPacienteEmgDetalle)
           this.datosMedicos.detalle = detalle
           dataResult = await pacienteEmergencia.create(this.datosMedicos)
           console.log(dataResult)
+          if (!dataResult[0]?.isSucces) {
+            this.isInvalid = true
+            console.log(dataResult[0].error.data.message)
+            this.messages = dataResult[0].error.data.message
+          } else {
+            this.isInvalid = true
+            console.log(dataResult[0].data.data.message)
+            this.messages = dataResult[0].data.data.message
+          }
         } else {}
+      }
+    },
+    changeColorTabItem (indexChange = -1, menor = false) {
+      const tabsForm = this.items
+      if (indexChange === -1) {
+        Object.keys(tabsForm).map(
+          function (key) {
+            tabsForm[key].fondo.color = 'black'
+            return tabsForm[key]
+          })
+      } else {
+        if (!menor) {
+          Object.keys(tabsForm).map(
+            function (key, index) {
+              tabsForm[key].fondo.color = index === indexChange ? 'red' : 'black'
+              return tabsForm[key]
+            })
+        } else {
+          Object.keys(tabsForm).map(
+            function (key, index) {
+              tabsForm[key].fondo.color = index < indexChange ? 'red' : 'black'
+              return tabsForm[key]
+            })
+        }
       }
     },
     updatePciente (e, i) {
