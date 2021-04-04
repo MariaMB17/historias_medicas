@@ -5,6 +5,7 @@
               <v-snackbar
                 :timeout="3000"
                 :value="isInvalid"
+                :color="colorValue"
                 absolute
                 right
                 shaped
@@ -52,7 +53,8 @@ export default {
       user: new User('', '', '', '', false),
       loading: false,
       isInvalid: false,
-      messages: ''
+      messages: '',
+      colorValue: 'cyan darken-2'
     }
   },
   computed: {
@@ -92,6 +94,7 @@ export default {
       this.$v.$touch()
       if (this.$v.$invalid) {
         this.isInvalid = true
+        this.colorValue = 'error'
         this.messages = 'Usuario o contraseña invalidos'
       } else {
         // if (this.user.email && this.user.password) {
@@ -108,8 +111,9 @@ export default {
         },
         error => {
           this.messages =
-          (error.response && error.response.data) ||
+          (error.response && error.response.data.message) ||
           error.message || error.toString()
+          this.colorValue = 'error'
           this.isInvalid = true
         })
       }

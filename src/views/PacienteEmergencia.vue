@@ -32,7 +32,7 @@
                                 class="mb-2"
                                 v-bind="attrs"
                                 v-on="on">
-                                Nueva paciente
+                                Nuevo(a) paciente
                             </v-btn>
                         </template>
                         <v-card height="570px">
