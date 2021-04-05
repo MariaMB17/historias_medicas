@@ -15,14 +15,15 @@
             :search="search">
             <template v-slot:top>
               <v-snackbar
-                v-model="messages"
-                :timeout="3000"
-                :value="isInvalid"
-                absolute
-                right
-                shaped
-                top>
-              </v-snackbar>
+              :timeout="3000"
+              v-model="isInvalid"
+              :color="colorValue"
+              absolute
+              right
+              shaped
+              top>
+              {{ messages }}
+            </v-snackbar>
                 <v-toolbar flat>
                     <v-toolbar-title>Personas</v-toolbar-title>
                     <v-divider
@@ -367,6 +368,7 @@ export default {
       search: '',
       dialog: false,
       tab: null,
+      colorValue: 'success',
       menu: false,
       listaMedicos: [],
       listaPacientes: [],
@@ -495,6 +497,7 @@ export default {
         })
       console.log(pacienteEmgDetalleErrors, datosMedicosErrors)
       if (this.$v.$invalid) {
+        this.colorValue = 'error'
         this.isInvalid = true
         this.messages = 'DEBE LLENAR TODOS LOS CAMPOS OBLIGATORIOS'
         if (datosMedicosErrors.length > 0 && pacienteEmgDetalleErrors.length > 0) {
@@ -517,13 +520,20 @@ export default {
           dataResult = await pacienteEmergencia.create(this.datosMedicos)
           console.log(dataResult)
           if (!dataResult[0]?.isSucces) {
+            this.colorValue = 'success'
+            const errores = dataResult[0].error.data.errors
+            const mensaje = Object.keys(errores).map(function (key, index) {
+              return errores[key][index]
+            })
+            this.messages = mensaje[0]
             this.isInvalid = true
-            console.log(dataResult[0].error.data.message)
-            this.messages = dataResult[0].error.data.message
           } else {
+            this.colorValue = 'error'
             this.isInvalid = true
             console.log(dataResult[0].data.data.message)
             this.messages = dataResult[0].data.data.message
+            this.$v.$reset()
+            this.clearFormulario()
           }
         } else {}
       }
