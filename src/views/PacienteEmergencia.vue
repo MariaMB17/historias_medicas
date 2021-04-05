@@ -520,7 +520,7 @@ export default {
           dataResult = await pacienteEmergencia.create(this.datosMedicos)
           console.log(dataResult)
           if (!dataResult[0]?.isSucces) {
-            this.colorValue = 'success'
+            this.colorValue = 'error'
             const errores = dataResult[0].error.data.errors
             const mensaje = Object.keys(errores).map(function (key, index) {
               return errores[key][index]
@@ -528,7 +528,7 @@ export default {
             this.messages = mensaje[0]
             this.isInvalid = true
           } else {
-            this.colorValue = 'error'
+            this.colorValue = 'success'
             this.isInvalid = true
             console.log(dataResult[0].data.data.message)
             this.messages = dataResult[0].data.data.message
