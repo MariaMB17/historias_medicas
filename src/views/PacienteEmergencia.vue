@@ -518,14 +518,18 @@ export default {
           detalle.push(this.datosPacienteEmgDetalle)
           this.datosMedicos.detalle = detalle
           dataResult = await pacienteEmergencia.create(this.datosMedicos)
-          console.log(dataResult)
           if (!dataResult[0]?.isSucces) {
             this.colorValue = 'error'
             const errores = dataResult[0].error.data.errors
-            const mensaje = Object.keys(errores).map(function (key, index) {
-              return errores[key][index]
-            })
-            this.messages = mensaje[0]
+            let mensaje = ''
+            if (errores) {
+              mensaje = Object.keys(errores).map(function (key, index) {
+                return errores[key][index]
+              })[0]
+            } else {
+              mensaje = dataResult[0].error.data.message
+            }
+            this.messages = mensaje
             this.isInvalid = true
           } else {
             this.colorValue = 'success'
