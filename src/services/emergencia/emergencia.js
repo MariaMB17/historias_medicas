@@ -18,5 +18,5 @@ export default {
     const [emergencia, listEmergenciaErr] = await handle(Service.post(resource, data, { headers: authHeader() }))
     const result = emergencia !== undefined ? [{ isSucces: true, data: emergencia }] : [{ isSucces: false, error: listEmergenciaErr.response }]
     return result
-  },
+  }
 }

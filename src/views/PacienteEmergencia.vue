@@ -336,6 +336,7 @@ import moment from 'moment'
 import { validationMixin } from 'vuelidate'
 import personaService from '../services/personas/persona.js'
 import pacienteEmergencia from '../services/pacienteEmergencia/pacienteEmergencia.js'
+import emergenciaServices from '../services/emergencia/emergencia'
 import Persona from '../models/Persona-model.js'
 import Diagnostico from '../models/Diagnostico-model.js'
 import MotivoIngreso from '../models/motivoIngreso-model.js'
@@ -404,24 +405,20 @@ export default {
           value: 'id'
         },
         {
-          text: 'Tipo',
-          value: 'tipo_id'
+          text: 'Apellidos (paciente)',
+          value: 'detalle[0].paciente.apellidos'
         },
         {
-          text: 'Identificación',
-          value: 'identificacion'
+          text: 'Nombres (paciente)',
+          value: 'detalle[0].paciente.nombres'
         },
         {
-          text: 'Apellidos',
-          value: 'apellidos'
+          text: 'Apellidos (médico)',
+          value: 'medico.apellidos'
         },
         {
-          text: 'Nombres',
-          value: 'nombres'
-        },
-        {
-          text: 'Email',
-          value: 'email'
+          text: 'Nombres (médico)',
+          value: 'medico.nombres'
         },
         {
           text: 'Actions',
@@ -627,7 +624,7 @@ export default {
       } else {
         this.listaMedicos = []
       }
-      const result = await personaService.getList()
+      const result = await emergenciaServices.getList()
       if (result[0].isSucces) {
         this.dataGridPersona = result[0].data.data.data
       } else {
