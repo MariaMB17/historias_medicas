@@ -235,15 +235,15 @@
                                                       sm="12"
                                                       md="12">
                                                       <v-textarea
-                                                        v-model="datosPacienteEmgDetalle.dignostico"
+                                                        v-model="datosPacienteEmgDetalle.diagnostico"
                                                         auto-grow
                                                         label="Impresion diagnostica"
                                                         rows="2"
                                                         row-height="20"
-                                                        :error-messages="dignosticoErrors"
+                                                        :error-messages="diagnosticoErrors"
                                                         required
-                                                        @input="$v.datosPacienteEmgDetalle.dignostico.$touch()"
-                                                        @blur="$v.datosPacienteEmgDetalle.dignostico.$touch()">
+                                                        @input="$v.datosPacienteEmgDetalle.diagnostico.$touch()"
+                                                        @blur="$v.datosPacienteEmgDetalle.diagnostico.$touch()">
                                                       </v-textarea>
                                                     </v-col>
                                                     <v-col
@@ -353,7 +353,7 @@ export default {
     datosPacienteEmgDetalle: {
       dest: { required },
       motivoingreso: { required },
-      dignostico: { required },
+      diagnostico: { required },
       observaciones: { required }
     }
   },
@@ -466,10 +466,10 @@ export default {
       !this.$v.datosPacienteEmgDetalle.motivoingreso.required && errors.push('Reason for admission is required')
       return errors
     },
-    dignosticoErrors () {
+    diagnosticoErrors () {
       const errors = []
-      if (!this.$v.datosPacienteEmgDetalle.dignostico.$dirty) return errors
-      !this.$v.datosPacienteEmgDetalle.dignostico.required && errors.push('Diagnostic is required')
+      if (!this.$v.datosPacienteEmgDetalle.diagnostico.$dirty) return errors
+      !this.$v.datosPacienteEmgDetalle.diagnostico.required && errors.push('Diagnostic is required')
       return errors
     },
     observacionesErrors () {
@@ -490,9 +490,10 @@ export default {
       const formDatosMedicos = this.$v.datosMedicos
       const datosMedicosErrors = Object.keys(formDatosMedicos).filter(
         function (key) {
+          console.log(key)
           return formDatosMedicos[key]?.$error === true
         })
-      console.log(pacienteEmgDetalleErrors, datosMedicosErrors)
+      console.log(this.$v.$invalid)
       if (this.$v.$invalid) {
         this.colorValue = 'error'
         this.isInvalid = true
@@ -507,36 +508,40 @@ export default {
           this.changeColorTabItem(-1)
         }
       } else {
+        alert('pasoooo')
         this.changeColorTabItem(-1)
+        this.isInvalid = false
+        let dataResult = []
+        const detalle = []
+        detalle.push(this.datosPacienteEmgDetalle)
+        this.datosMedicos.detalle = detalle
+        alert(this.editedIndex)
         if (this.editedIndex === -1) {
-          this.isInvalid = false
-          let dataResult = []
-          const detalle = []
-          detalle.push(this.datosPacienteEmgDetalle)
-          this.datosMedicos.detalle = detalle
           dataResult = await pacienteEmergencia.create(this.datosMedicos)
-          if (!dataResult[0]?.isSucces) {
-            this.colorValue = 'error'
-            const errores = dataResult[0].error.data.errors
-            let mensaje = ''
-            if (errores) {
-              mensaje = Object.keys(errores).map(function (key, index) {
-                return errores[key][index]
-              })[0]
-            } else {
-              mensaje = dataResult[0].error.data.message
-            }
-            this.messages = mensaje
-            this.isInvalid = true
+        } else {
+          dataResult = await pacienteEmergencia.update(this.datosMedicos)
+        }
+        if (!dataResult[0]?.isSucces) {
+          this.colorValue = 'error'
+          const errores = dataResult[0].error.data.errors
+          let mensaje = ''
+          if (errores) {
+            mensaje = Object.keys(errores).map(function (key, index) {
+              return errores[key][index]
+            })[0]
           } else {
-            this.colorValue = 'success'
-            this.isInvalid = true
-            console.log(dataResult[0].data.data.message)
-            this.messages = dataResult[0].data.data.message
-            this.$v.$reset()
-            this.clearFormulario()
+            mensaje = dataResult[0].error.data.message
           }
-        } else {}
+          this.messages = mensaje
+          this.isInvalid = true
+        } else {
+          this.colorValue = 'success'
+          this.isInvalid = true
+          console.log(dataResult[0].data.data.message)
+          this.messages = dataResult[0].data.data.message
+          this.$v.$reset()
+          this.clearFormulario()
+        }
       }
     },
     changeColorTabItem (indexChange = -1, menor = false) {
@@ -602,6 +607,13 @@ export default {
       this.datosPacienteEmgDetalle = new DatosPacienteEmgDetalle(-1, -1, -1, '', '', '', '', '', '')
     },
     editPersona (item) {
+      const itemSelect = item.item
+      this.editedIndex = this.dataGridPersona.findIndex(emergencia => emergencia.id === itemSelect.id)
+      this.datosMedicos = itemSelect
+      this.datosPacienteEmgDetalle = itemSelect.detalle[0]
+      itemSelect.detalle[0].paciente.edad = this.calcularEdad(itemSelect.detalle[0].paciente.fecha_nac)
+      this.persona = itemSelect.detalle[0].paciente
+      console.log(itemSelect)
       this.dialog = true
     },
     deleteItem (item) {},

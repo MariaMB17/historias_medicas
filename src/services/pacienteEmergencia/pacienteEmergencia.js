@@ -21,5 +21,10 @@ export default {
       ? [{ isSucces: true, data: pacienteEmgDetalle }]
       : [{ isSucces: false, error: pacienteEmgDetalleErr.response }]
     return result
+  },
+  async update (data) {
+    const [pacienteEmgDetalle, pacienteEmgDetalleErr] = await handle(Service.put(resource + '/' + data.id, data, { headers: authHeader() }))
+    const result = pacienteEmgDetalle !== undefined ? [{ isSucces: true, data: pacienteEmgDetalle }] : [{ isSucces: false, error: pacienteEmgDetalleErr.response }]
+    return result
   }
 }
