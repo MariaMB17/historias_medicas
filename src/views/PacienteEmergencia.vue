@@ -565,7 +565,9 @@ export default {
           this.isInvalid = true
           this.messages = dataResult[0].data.data.message
           this.$v.$reset()
-          this.clearFormulario()
+          if (this.editedIndex === -1) {
+            this.clearFormulario()
+          }
         }
       }
     },
