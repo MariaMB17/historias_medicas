@@ -26,5 +26,10 @@ export default {
     const [pacienteEmgDetalle, pacienteEmgDetalleErr] = await handle(Service.put(resource + '/' + data.id, data, { headers: authHeader() }))
     const result = pacienteEmgDetalle !== undefined ? [{ isSucces: true, data: pacienteEmgDetalle }] : [{ isSucces: false, error: pacienteEmgDetalleErr.response }]
     return result
+  },
+  async delete (id) {
+    const [pacienteEmgDetalle, pacienteEmgDetalleErr] = await handle(Service.delete(resource + '/' + id, { headers: authHeader() }))
+    const result = pacienteEmgDetalle !== undefined ? [{ isSucces: true, data: pacienteEmgDetalle }] : [{ isSucces: false, error: pacienteEmgDetalleErr.response }]
+    return result
   }
 }

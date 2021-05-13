@@ -54,7 +54,7 @@
             <v-list-item-icon>
               <v-icon>mdi-star</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>paciente emergencia</v-list-item-title>
+            <v-list-item-title>Emergencias</v-list-item-title>
           </v-list-item>
         </v-list>
         </v-navigation-drawer>

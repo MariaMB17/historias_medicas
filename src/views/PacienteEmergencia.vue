@@ -34,7 +34,9 @@
                     <v-spacer></v-spacer>
                     <v-dialog
                         v-model="dialog"
-                        max-width="800px">
+                        content-class="dialog-emergencia"
+                        transition="dialog-bottom-transition"
+                        persistent>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn
                                 color="primary"
@@ -45,13 +47,30 @@
                                 Nuevo(a) paciente
                             </v-btn>
                         </template>
-                        <v-card height="570px">
-                            <v-toolbar flat>
-                                <v-toolbar-title>
-                                    <div class="tittle-form">
-                                        Nuevo paciente
-                                    </div>
-                                </v-toolbar-title>
+                        <v-card>
+                            <v-toolbar flat
+                                dark
+                                color="primary">
+                                <v-btn
+                                    icon
+                                    dark
+                                    @click="close"
+                                  >
+                                    <v-icon>mdi-close</v-icon>
+                                  </v-btn>
+                                  <v-toolbar-title>
+                                    {{ formTitle }}
+                                  </v-toolbar-title>
+                                  <v-spacer></v-spacer>
+                                  <v-toolbar-items>
+                                    <v-btn
+                                      dark
+                                      text
+                                      @click="save"
+                                    >
+                                      Save
+                                    </v-btn>
+                                  </v-toolbar-items>
                             </v-toolbar>
                             <v-card-text style="background:#aeaeae; padding:10px;">
                                 <v-form>
@@ -295,22 +314,30 @@
                                     </v-tabs-items>
                                 </v-form>
                             </v-card-text>
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn
-                                    color="blue darken-1"
-                                    text
-                                    @click="close">
-                                    Cancel
-                                </v-btn>
-                                <v-btn
-                                    color="blue darken-1"
-                                    text
-                                    @click="save">
-                                    Save
-                                </v-btn>
-                            </v-card-actions>
                         </v-card>
+                    </v-dialog>
+                    <v-dialog v-model="dialogDelete" max-width="800px">
+                      <v-card>
+                        <v-card-title class="headline">Estas seguro que quiere eliminar el registro?</v-card-title>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            color="blue darken-1"
+                            text
+                            @click="closeDelete"
+                          >
+                            Cancel
+                          </v-btn>
+                          <v-btn
+                            color="blue darken-1"
+                            text
+                            @click="deleteItemConfirm"
+                          >
+                            OK
+                          </v-btn>
+                          <v-spacer></v-spacer>
+                        </v-card-actions>
+                      </v-card>
                     </v-dialog>
                 </v-toolbar>
             </template>
@@ -366,6 +393,7 @@ export default {
       diagnostico: new Diagnostico(-1, ''),
       motivoIngreso: new MotivoIngreso(-1, ''),
       isInvalid: false,
+      dialogDelete: false,
       search: '',
       dialog: false,
       tab: null,
@@ -441,9 +469,11 @@ export default {
     this.initialize()
   },
   computed: {
+    formTitle () {
+      return this.editedIndex === -1 ? 'Nueva emergencia' : 'Editar emergencia'
+    },
     medicoErrors () {
       const errors = []
-      console.log('paso')
       if (!this.$v.datosMedicos.persona_id.$dirty) return errors
       !this.$v.datosMedicos.persona_id.required && errors.push('Doctor is required.')
       return errors
@@ -490,10 +520,8 @@ export default {
       const formDatosMedicos = this.$v.datosMedicos
       const datosMedicosErrors = Object.keys(formDatosMedicos).filter(
         function (key) {
-          console.log(key)
           return formDatosMedicos[key]?.$error === true
         })
-      console.log(this.$v.$invalid)
       if (this.$v.$invalid) {
         this.colorValue = 'error'
         this.isInvalid = true
@@ -508,14 +536,12 @@ export default {
           this.changeColorTabItem(-1)
         }
       } else {
-        alert('pasoooo')
         this.changeColorTabItem(-1)
         this.isInvalid = false
         let dataResult = []
         const detalle = []
         detalle.push(this.datosPacienteEmgDetalle)
         this.datosMedicos.detalle = detalle
-        alert(this.editedIndex)
         if (this.editedIndex === -1) {
           dataResult = await pacienteEmergencia.create(this.datosMedicos)
         } else {
@@ -537,7 +563,6 @@ export default {
         } else {
           this.colorValue = 'success'
           this.isInvalid = true
-          console.log(dataResult[0].data.data.message)
           this.messages = dataResult[0].data.data.message
           this.$v.$reset()
           this.clearFormulario()
@@ -600,6 +625,27 @@ export default {
         this.clearFormulario()
       })
     },
+
+    closeDelete () {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedIndex = -1
+      })
+    },
+    async deleteItemConfirm () {
+      const idEmergencia = this.datosMedicos.id
+      this.isInvalid = false
+      const dataResult = await pacienteEmergencia.delete(idEmergencia)
+      if (!dataResult[0]?.isSucces) {
+        this.isInvalid = true
+        this.messages = dataResult[0].error.data.message
+      } else {
+        this.isInvalid = true
+        this.messages = dataResult[0].data.data.message
+        this.dataGridPersona.splice(this.editedIndex, 1)
+      }
+      this.closeDelete()
+    },
     clearFormulario () {
       this.persona = new Persona(-1, '', '', '', '', '', '', new Date().toISOString().substr(0, 10), '',
         '', 0, 0, 0, '', '', 0)
@@ -613,10 +659,17 @@ export default {
       this.datosPacienteEmgDetalle = itemSelect.detalle[0]
       itemSelect.detalle[0].paciente.edad = this.calcularEdad(itemSelect.detalle[0].paciente.fecha_nac)
       this.persona = itemSelect.detalle[0].paciente
-      console.log(itemSelect)
       this.dialog = true
     },
-    deleteItem (item) {},
+    deleteItem (item) {
+      console.log(item)
+      const itemSelect = item.item
+      this.datosMedicos = itemSelect
+      this.datosPacienteEmgDetalle = itemSelect.detalle[0]
+      this.persona = itemSelect.detalle[0].paciente
+      this.editedIndex = this.dataGridPersona.findIndex(emergencia => emergencia.id === itemSelect.id)
+      this.dialogDelete = true
+    },
     async initialize () {
       const resultEnfermeros = await personaService.getListEnfermeros()
       if (resultEnfermeros[0].isSucces) {
