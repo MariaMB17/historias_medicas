@@ -552,6 +552,7 @@ export default {
         this.isInvalid = false
         let dataResult = []
         if (this.editedIndex === -1) {
+          this.persona.id = null
           dataResult = await personaService.create(this.persona)
         } else {
           dataResult = await personaService.update(this.persona)
